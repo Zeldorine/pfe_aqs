@@ -5,11 +5,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,49 +37,24 @@ public class TestConnexion {
 
     @Before
     public void setUp() {
-        session = HibernateUtil.getSessionFactory().openSession();
+        entityManager = HibernateUtil.getEntityManager();
     }
 
     @After
     public void tearDown() {
-        if (session != null) {
-            session.close();
-        }
+        HibernateUtil.shutdown();
     }
 
     @Test
     public void testApp() {
-        entityManager = Persistence.createEntityManagerFactory("entityManager").createEntityManager();
-        //entityManager = EntityManagerUtil.getEntityManager();
         entityManager.getTransaction().begin();
 
-        List results = entityManager.createNativeQuery("SELECT * FROM public.\"Test\"").getResultList();
-        System.out.println("results : " + results.get(0));
-        System.out.println("results : " + results.get(1));
-        //entityManager.getTransaction().commit();
+        List<String> results = entityManager.createNativeQuery("SELECT * FROM public.\"Test\"").getResultList();
+        
+        Assert.assertEquals(2, results.size());
+        Assert.assertTrue(results.contains(4));
+        Assert.assertTrue(results.contains(5));
+            
         entityManager.close();
-    }
-
-    // @Test
-    public void testGet() throws Exception {
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            String sql = "SELECT * FROM public.\"Test\"";
-            //SQLQuery query = session.createNativeQuery(sql);
-            //List results = query.list();
-            List results = null;
-            System.out.println("results : " + results.get(0));
-            System.out.println("results : " + results.get(1));
-
-            session.flush();
-            session.clear();
-            transaction.commit();
-        } catch (HibernateException e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
     }
 }
