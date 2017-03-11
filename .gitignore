@@ -1,0 +1,48 @@
+# Class file
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+dependency-reduced-pom.xml
+
+# TARGET #
+**/target/
+
+# VOLANTE files #
+**/src/main/cartridges/java/
+
+# Log file #
+*.log
+*.log.*
+
+# Others #
+*.o
+*.lo
+*.la
+*.al
+*.cdr
+.libs
+*.so
+*.so.[0-9]*
+*.a
+*.pyc
+*.pyo
+__pycache__
+*.rej
+*~
+.*.swp
+.DS_Store
+.reviewboardrc
+.settings
+.project
+.classpath
+.metadata
+*.iml
+.idea
+nb-configuration.xml
+nb_jr_remoting.cfg
