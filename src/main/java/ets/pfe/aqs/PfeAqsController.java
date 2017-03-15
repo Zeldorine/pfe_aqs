@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Zeldorine
  */
-public class PfeAqs implements PfeAqsService {
+public class PfeAqsController implements PfeAqsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqs.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqsController.class);
 
     private LoginDaoService loginDao;
 
-    public PfeAqs() throws JAXBException {
+    public PfeAqsController() throws JAXBException {
     }
 
     @PostConstruct

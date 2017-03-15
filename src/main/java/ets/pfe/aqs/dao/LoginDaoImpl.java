@@ -11,9 +11,9 @@ import ets.pfe.aqs.dao.service.LoginDaoService;
  * 
  * @author Zeldorine
  */
-public class LoginDao implements LoginDaoService {
+public class LoginDaoImpl implements LoginDaoService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoginDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginDaoImpl.class);
 
     private static final String SQL_RESET_EXT_MESSAGE_DIGEST = "UPDATE EXTERNALMESSAGE SET DIGEST = NULL";
 

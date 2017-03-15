@@ -1,9 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0"
-             xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence
+    xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+    version="2.1">
     <persistence-unit name="entityManager" transaction-type="RESOURCE_LOCAL">
+        <description>JPA pfe</description>
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>ets.pfe.aqs.modele.TestDao</class>
+        <class>ets.pfe.aqs.modele.Entreprise</class>
+        <class>ets.pfe.aqs.modele.Utilisateur</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="transaction.factory_class" value="org.hibernate.transaction.JDBCTransactionFactory"/>
@@ -15,6 +21,7 @@
             <property name="hibernate.connection.password" value="pfeaqs"/>
             <property name="hibernate.current_session_context_class" value="thread"/>
             <property name="hibernate.search.autoregister_listeners" value="false"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="show_sql" value="true"/>
             <property name="format_sql" value="true"/>
             <property name="use_sql_comments" value="true"/>
