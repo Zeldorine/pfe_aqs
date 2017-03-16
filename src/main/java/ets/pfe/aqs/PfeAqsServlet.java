@@ -27,8 +27,8 @@ public class PfeAqsServlet {
         return pfeAqs;
     }
 
-    public void setPfeAqs(PfeAqsService fileLauncher) {
-        this.pfeAqs = fileLauncher;
+    public void setPfeAqs(PfeAqsService pfeAqsService) {
+        this.pfeAqs = pfeAqsService;
     }
 
 
