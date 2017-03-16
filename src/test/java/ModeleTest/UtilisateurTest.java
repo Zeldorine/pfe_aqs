@@ -5,8 +5,10 @@ import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.modele.Role;
 import ets.pfe.aqs.modele.Utilisateur;
 import ets.pfe.aqs.util.JPAUtility;
+import ets.pfe.aqs.util.SecurityUtil;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import org.junit.After;
@@ -26,6 +28,7 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UtilisateurTest {
 
+    private static final String password = "password";
     EntityManager entityManager;
     static int enterpriseId;
     static int userId;
@@ -92,7 +95,7 @@ public class UtilisateurTest {
     @Test
     public void test3Update() {
         entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("UPDATE FROM Utilisateur u SET u.actif = 0 where u.id = '" + userId + "'");
+        Query query = entityManager.createQuery("UPDATE FROM Utilisateur u SET u.actif = 0 where u.id = " + userId);
         int result = query.executeUpdate();
         entityManager.getTransaction().commit();
 
@@ -114,7 +117,29 @@ public class UtilisateurTest {
     }
 
     @Test
-    public void test5CleanTest() {
+    public void test5UpdatePassword() {
+        String passCrypt = SecurityUtil.cryptWithMD5(password);
+
+        entityManager.getTransaction().begin();
+        Query query = entityManager.createNativeQuery("UPDATE Utilisateur SET mot_de_passe = '" + passCrypt + "' where id = " + userId);
+        int result = query.executeUpdate();
+        entityManager.getTransaction().commit();
+
+        Assert.assertEquals(1, result);
+    }
+
+    @Test
+    public void test6RecoveryPassword() {
+        String passCrypt = SecurityUtil.cryptWithMD5(password);
+        Query query = entityManager.createNativeQuery("SELECT mot_de_passe from Utilisateur where id = " + userId);
+        List<String> result = query.getResultList();
+        
+        Assert.assertNotNull(result);
+        Assert.assertEquals(passCrypt, result.get(0));
+    }
+
+    @Test
+    public void test7CleanTest() {
         Utilisateur utilisateur = entityManager.find(Utilisateur.class, userId);
         entityManager.getTransaction().begin();
         entityManager.remove(utilisateur);
