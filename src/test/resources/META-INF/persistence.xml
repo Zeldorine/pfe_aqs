@@ -10,6 +10,8 @@
         <class>ets.pfe.aqs.modele.TestDao</class>
         <class>ets.pfe.aqs.modele.Entreprise</class>
         <class>ets.pfe.aqs.modele.Utilisateur</class>
+        <class>ets.pfe.aqs.modele.Formulaire</class>
+        <class>ets.pfe.aqs.modele.Audit</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="transaction.factory_class" value="org.hibernate.transaction.JDBCTransactionFactory"/>

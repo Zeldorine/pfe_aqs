@@ -32,17 +32,19 @@ CREATE TABLE Audit (
 	date			timestamp 	NOT NULL,
 	audit_type		integer 	NOT NULL,
 	utilisateur		integer 	NOT NULL,
-	object			json		NOT NULL
+	objet			text		NOT NULL
 );
 
 
 CREATE TABLE Formulaire (
 	id				serial 			NOT NULL PRIMARY KEY,
+	nom 			varchar(100) 	NOT NULL,
 	date_creation	timestamp 		NOT NULL,
 	version			varchar(100) 	NOT NULL,
 	id_template		integer 		NOT NULL,
-	contenu			json			NOT NULL
-);
+	contenu			text			NOT NULL,
+	createur		integer			NOT NULL,
+	approbation 	smallint		NOT NULL
 
 ---------------------------------------------------------------------------------------------------------------------
 

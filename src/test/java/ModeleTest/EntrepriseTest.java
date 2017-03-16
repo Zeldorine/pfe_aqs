@@ -26,6 +26,7 @@ import org.junit.runners.MethodSorters;
 public class EntrepriseTest {
 
     EntityManager entityManager;
+    static int enterpriseId;
 
     @BeforeClass
     public static void setUpClass() {
@@ -56,26 +57,23 @@ public class EntrepriseTest {
 
         entityManager.persist(entreprise);
         entityManager.getTransaction().commit();
+
+        enterpriseId = entreprise.getId();
     }
 
     @Test
     public void test2Find() {
-        TypedQuery<Entreprise> query = entityManager.createQuery("FROM Entreprise where nom = 'ENT_Test'", Entreprise.class);
-        List<Entreprise> entreprise = query.getResultList();
+        Entreprise entreprise = entityManager.find(Entreprise.class, enterpriseId);
 
-        Assert.assertNotNull(entreprise);
-        Assert.assertEquals(1, entreprise.size());
-        
-        Entreprise ent = entreprise.get(0);
-        Assert.assertEquals("ENT_Test", ent.getNom());
-        Assert.assertEquals("mission d'insertion", ent.getMission());
-        Assert.assertEquals(ApprobationType.ZERO_APPROBATION, ent.getApprobationType());
+        Assert.assertEquals("ENT_Test", entreprise.getNom());
+        Assert.assertEquals("mission d'insertion", entreprise.getMission());
+        Assert.assertEquals(ApprobationType.ZERO_APPROBATION, entreprise.getApprobationType());
     }
 
     @Test
     public void test3Update() {
         entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("UPDATE FROM Entreprise e SET e.nom = 'ENT_Test_UPDATE' where e.nom = 'ENT_Test'");
+        Query query = entityManager.createQuery("UPDATE FROM Entreprise e SET e.nom = 'ENT_Test_UPDATE' where e.id = " + enterpriseId);
         int result = query.executeUpdate();
         entityManager.getTransaction().commit();
 
@@ -84,22 +82,17 @@ public class EntrepriseTest {
 
     @Test
     public void test4Find() {
-        TypedQuery<Entreprise> queryUpdate = entityManager.createQuery("FROM Entreprise where nom = 'ENT_Test_UPDATE'", Entreprise.class);
-        List<Entreprise> entreprise = queryUpdate.getResultList();
+        Entreprise entreprise = entityManager.find(Entreprise.class, enterpriseId);
 
-        Assert.assertNotNull(entreprise);
-        Assert.assertEquals(1, entreprise.size());
-        
-        Entreprise ent = entreprise.get(0);
-        Assert.assertEquals("ENT_Test_UPDATE", ent.getNom());
-        Assert.assertEquals("mission d'insertion", ent.getMission());
-        Assert.assertEquals(ApprobationType.ZERO_APPROBATION, ent.getApprobationType());
+        Assert.assertEquals("ENT_Test_UPDATE", entreprise.getNom());
+        Assert.assertEquals("mission d'insertion", entreprise.getMission());
+        Assert.assertEquals(ApprobationType.ZERO_APPROBATION, entreprise.getApprobationType());
     }
 
     @Test
     public void test5Delete() {
         entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("DELETE FROM Entreprise e where e.nom = 'ENT_Test_UPDATE'");
+        Query query = entityManager.createQuery("DELETE FROM Entreprise e where e.id = " + enterpriseId);
         int result = query.executeUpdate();
         entityManager.getTransaction().commit();
 
@@ -108,10 +101,8 @@ public class EntrepriseTest {
 
     @Test
     public void test6Find() {
-        TypedQuery<Entreprise> queryUpdate = entityManager.createQuery("FROM Entreprise where nom = 'ENT_Test_UPDATE'", Entreprise.class);
-        List<Entreprise> entrepriseUpdate = queryUpdate.getResultList();
+        Entreprise entreprise = entityManager.find(Entreprise.class, enterpriseId);
 
-        Assert.assertNotNull(entrepriseUpdate);
-        Assert.assertEquals(0, entrepriseUpdate.size());
+        Assert.assertNull(entreprise);
     }
 }

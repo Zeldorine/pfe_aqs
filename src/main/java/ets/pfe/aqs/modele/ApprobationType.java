@@ -1,37 +1,29 @@
 package ets.pfe.aqs.modele;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
+ * Approbation level to validate a new form revision.
+ * There are 3 choices :
+ * <ul>
+ *      <li> No approbration, revision is valid with no approbation for all users
+ *      <li> One approbation, revision need one approbation do be validate
+ *      <li> Two approbation, revision need two approbation do be validate
+ * </ul>
+ * 
  * @author Zeldorine
+ * @version 1.0.0
  */
 public enum ApprobationType {
-    ZERO_APPROBATION(1),
-    ONE_APPROBATION(2),
-    TWO_APPROBATION(5);
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditType.class);
-    private final int valueInDB;
-
-    private ApprobationType(int valueInDB) {
-        this.valueInDB = valueInDB;
+    ZERO_APPROBATION(0),
+    ONE_APPROBATION(1),
+    TWO_APPROBATION(2);
+    
+    private int totalApprobation;
+    
+    private ApprobationType(int totalApprobation){
+        this.totalApprobation = totalApprobation;
     }
-
-    public int getValueInDb() {
-        return valueInDB;
-    }
-
-    public ApprobationType getAuditTypeByValueInDb(int value) {
-        for (ApprobationType approbationType : ApprobationType.values()) {
-            if (approbationType.getValueInDb() == value) {
-                return approbationType;
-            }
-        }
-
-        LOGGER.warn("Cannot retrieve audit type with this value in db : " + value);
-
-        return null;
+    
+    public int getTotalApprobation(){
+        return totalApprobation;
     }
 }

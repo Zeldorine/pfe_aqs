@@ -1,38 +1,21 @@
 package ets.pfe.aqs.modele;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- *
+ * The role define what kind of actions is possible for users.
+ * There are 4 roles :
+ * <ul>
+ *      <li> Editeur, can see manuel, create form and revision
+ *      <li> Approbateur, can see manuel, create form, revision and approve a revision
+ *      <li> Admin system, can create enterprise and admin system
+ *      <li> Admin entreprise, can create users with editeur or approbateur role
+ * </ul>
+ * 
  * @author Zeldorine
+ * @version 1.0.0
  */
 public enum Role {
-    EDITEUR(1),
-    APPROBATEUR(2),
-    ADMIN_SYSTEM(3),
-    ADMIN_ENTREPRISE(4);
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Role.class);
-    private final int valueInDB;
-
-    private Role(int valueInDB) {
-        this.valueInDB = valueInDB;
-    }
-
-    public int getValueInDb() {
-        return valueInDB;
-    }
-
-    public Role getAuditTypeByValueInDb(int value) {
-        for (Role role : Role.values()) {
-            if (role.getValueInDb() == value) {
-                return role;
-            }
-        }
-
-        LOGGER.warn("Cannot retrieve role with this value in db : " + value);
-
-        return null;
-    }
+    EDITEUR,
+    APPROBATEUR,
+    ADMIN_SYSTEM,
+    ADMIN_ENTREPRISE;
 }

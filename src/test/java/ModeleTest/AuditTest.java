@@ -1,6 +1,9 @@
 package ModeleTest;
 
+import static ModeleTest.UtilisateurTest.enterpriseId;
 import ets.pfe.aqs.modele.ApprobationType;
+import ets.pfe.aqs.modele.Audit;
+import ets.pfe.aqs.modele.AuditType;
 import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.modele.Role;
 import ets.pfe.aqs.modele.Utilisateur;
@@ -24,11 +27,12 @@ import org.junit.runners.MethodSorters;
  * @author Zeldorine
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UtilisateurTest {
+public class AuditTest {
 
     EntityManager entityManager;
+    static int auditId;
     static int enterpriseId;
-    static int userId;
+    static int utilisateurId;
 
     @BeforeClass
     public static void setUpClass() {
@@ -37,7 +41,6 @@ public class UtilisateurTest {
 
     @AfterClass
     public static void tearDownClass() {
-
         JPAUtility.close();
     }
 
@@ -63,7 +66,7 @@ public class UtilisateurTest {
     }
 
     @Test
-    public void test1Insert() {
+    public void test1PrepareTest() {
         Entreprise entAttach = entityManager.find(Entreprise.class, enterpriseId);
 
         assertNotNull(entAttach);
@@ -72,50 +75,41 @@ public class UtilisateurTest {
         entityManager.persist(utilisateur);
         entityManager.getTransaction().commit();
 
-        userId = utilisateur.getId();
+        utilisateurId = utilisateur.getId();
     }
 
     @Test
-    public void test2Find() {
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, userId);
+    public void test2Insert() {
+        Utilisateur userAttach = entityManager.find(Utilisateur.class, utilisateurId);
+        assertNotNull(userAttach);
 
-        Assert.assertNotNull(utilisateur);
-        Assert.assertEquals("username", utilisateur.getNomUtilisateur());
-        Assert.assertEquals("nom", utilisateur.getNom());
-        Assert.assertEquals("prenom", utilisateur.getPrenom());
-        Assert.assertEquals("nom@mail.com", utilisateur.getCourriel());
-        Assert.assertEquals(Role.EDITEUR, utilisateur.getRole());
-        Assert.assertEquals(true, utilisateur.isActif());
-        Assert.assertEquals(enterpriseId, utilisateur.getEntreprise());
-    }
-
-    @Test
-    public void test3Update() {
         entityManager.getTransaction().begin();
-        Query query = entityManager.createQuery("UPDATE FROM Utilisateur u SET u.actif = 0 where u.id = '" + userId + "'");
-        int result = query.executeUpdate();
+        Date now = Calendar.getInstance().getTime();
+        Audit audit = new Audit(utilisateurId, AuditType.CONNEXION, now, "pfe_aqs");
+        entityManager.persist(audit);
         entityManager.getTransaction().commit();
 
-        Assert.assertEquals(1, result);
+        auditId = audit.getId();
     }
 
     @Test
-    public void test4Find() {
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, userId);
+    public void test3Find() {
+        Audit audit = entityManager.find(Audit.class, auditId);
 
-        Assert.assertNotNull(utilisateur);
-        Assert.assertEquals("username", utilisateur.getNomUtilisateur());
-        Assert.assertEquals("nom", utilisateur.getNom());
-        Assert.assertEquals("prenom", utilisateur.getPrenom());
-        Assert.assertEquals("nom@mail.com", utilisateur.getCourriel());
-        Assert.assertEquals(Role.EDITEUR, utilisateur.getRole());
-        Assert.assertEquals(false, utilisateur.isActif());
-        Assert.assertEquals(enterpriseId, utilisateur.getEntreprise());
+        Assert.assertNotNull(audit);
+        Assert.assertEquals(utilisateurId, audit.getUtilisateurId());
+        Assert.assertEquals(AuditType.CONNEXION, audit.getAuditType());
+        Assert.assertEquals("pfe_aqs", audit.getObjet());
     }
 
     @Test
-    public void test5CleanTest() {
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, userId);
+    public void test4CleanTest() {
+        Audit audit = entityManager.find(Audit.class, auditId);
+        entityManager.getTransaction().begin();
+        entityManager.remove(audit);
+        entityManager.getTransaction().commit();
+
+        Utilisateur utilisateur = entityManager.find(Utilisateur.class, utilisateurId);
         entityManager.getTransaction().begin();
         entityManager.remove(utilisateur);
         entityManager.getTransaction().commit();
