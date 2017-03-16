@@ -31,6 +31,7 @@ public class PfeAqsApplication {
         LOGGER.info("[MAIN][PFE_AQS] Jetty started");
         
         try {
+            JPAUtility.open();
             jettyServer.start();
             jettyServer.join();
         } finally {

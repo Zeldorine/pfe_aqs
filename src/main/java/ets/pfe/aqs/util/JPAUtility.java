@@ -1,6 +1,5 @@
 package ets.pfe.aqs.util;
 
-import ets.pfe.aqs.PfeAqsServlet;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -20,6 +19,7 @@ public class JPAUtility {
 
     static {
         try {
+            LOGGER.info("Create entity manager factory");
             emf = Persistence.createEntityManagerFactory("entityManager");
         } catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed." + ex);
@@ -30,6 +30,7 @@ public class JPAUtility {
     public static void open() {
         try {
             if (emf == null) {
+                LOGGER.info("Create entity manager factory");
                 emf = Persistence.createEntityManagerFactory("entityManager");
             }
         } catch (Throwable ex) {
@@ -39,10 +40,13 @@ public class JPAUtility {
     }
 
     public static EntityManager openEntityManager() {
+        LOGGER.info("Create entity manager");
         return emf.createEntityManager();
     }
 
     public static synchronized void close() {
+        LOGGER.info("Close entity manager factory");
+        
         if (emf != null && emf.isOpen()) {
             while (emf.isOpen()) {
                 emf.close();
@@ -57,6 +61,8 @@ public class JPAUtility {
      * @param entityManager EntityManager
      */
     public static synchronized void closeEntityManager(EntityManager entityManager) {
+        LOGGER.info("Close entity manager");
+        
         if (entityManager != null) {
             try {
                 if (entityManager.getTransaction() != null) {
