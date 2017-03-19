@@ -1,4 +1,5 @@
 package ets.pfe.aqs;
+
 import ets.pfe.aqs.util.ConfigUtil;
 import ets.pfe.aqs.util.JPAUtility;
 import org.eclipse.jetty.server.Server;
@@ -23,11 +24,11 @@ public class PfeAqsApplication {
 
         LOGGER.info("Retrieve config...");
         config = (ConfigUtil) sprinContext.getBean("configUtil");
-        
+
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
 
-        Server jettyServer = new Server(8080);
+        Server jettyServer = new Server(Integer.valueOf(config.getServerPort()));
         jettyServer.setHandler(context);
 
         ServletHolder jerseyServlet = context.addServlet(
@@ -38,7 +39,7 @@ public class PfeAqsApplication {
                 PfeAqsServlet.class.getCanonicalName());
 
         LOGGER.info("[MAIN][PFE_AQS] Jetty started");
-        
+
         try {
             JPAUtility.open();
             jettyServer.start();

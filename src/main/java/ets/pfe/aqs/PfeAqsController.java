@@ -17,10 +17,13 @@ public class PfeAqsController implements PfeAqsService {
 
     private LoginDaoService loginDao;
 
-    public PfeAqsController() throws JAXBException {
+    public PfeAqsController() throws JAXBException{
     }
 
-    @PostConstruct
     public void init() {
+    }
+    
+    public String sayHello(){
+        return "Hello ! Welcome to Pfe AQS ! ";
     }
 }

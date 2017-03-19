@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:beans="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <context:component-scan base-package="ets.pfe.aqs" />
-
-    <context:annotation-config />
+    <!--<context:component-scan base-package="ets.pfe.aqs" />
+    <context:annotation-config />-->
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -19,8 +17,9 @@
             </list>
         </property>
     </bean>
-        
+    
     <bean class="ets.pfe.aqs.util.ConfigUtil" id="configUtil">
+        <property name="serverPort"             value="${pfeAqs.server.port}"/>
         <property name="smtpHost"               value="${pfeAqs.config.email.smtpHost}"/>
         <property name="smtpPort"               value="${pfeAqs.config.email.smtpPort}"/>
         <property name="fromEmail"              value="${pfeAqs.config.email.fromEmail}"/>

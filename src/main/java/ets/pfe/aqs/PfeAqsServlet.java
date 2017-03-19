@@ -1,20 +1,19 @@
 package ets.pfe.aqs;
 
-import ets.pfe.aqs.exception.PfeAqsException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ets.pfe.aqs.service.PfeAqsService;
+import javax.servlet.http.HttpServlet;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.xml.bind.JAXBException;
 
 /**
  * 
  * @author Zeldorine
  */
 @Path("/")
-public class PfeAqsServlet {
+public class PfeAqsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqsServlet.class);
 
@@ -23,18 +22,17 @@ public class PfeAqsServlet {
 
     private PfeAqsService pfeAqs;
 
-    public PfeAqsService getPfeAqs() {
-        return pfeAqs;
+    public PfeAqsServlet() {
+        try {
+            this.pfeAqs = new PfeAqsController();
+        } catch (JAXBException ex) {
+            LOGGER.error("An error occured during init servlet");
+        }
     }
-
-    public void setPfeAqs(PfeAqsService pfeAqsService) {
-        this.pfeAqs = pfeAqsService;
-    }
-
 
     @GET
     @Path("test")
     public String test() {
-        return "Welcome to Pfe AQS ! ";
+        return pfeAqs.sayHello();
     }
 }
