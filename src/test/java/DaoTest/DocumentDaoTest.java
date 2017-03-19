@@ -1,21 +1,14 @@
 package DaoTest;
 
 import ets.pfe.aqs.dao.DocumentDaoImpl;
-import ets.pfe.aqs.dao.UtilisateurDaoImpl;
 import ets.pfe.aqs.dao.service.DocumentDaoService;
-import ets.pfe.aqs.dao.service.UtilisateurDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.ApprobationType;
 import ets.pfe.aqs.modele.Formulaire;
-import ets.pfe.aqs.modele.Role;
-import ets.pfe.aqs.modele.Utilisateur;
 import ets.pfe.aqs.util.JPAUtility;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import org.junit.After;
