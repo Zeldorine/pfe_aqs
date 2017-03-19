@@ -22,12 +22,12 @@ public class Entreprise implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private int id;
+    private long id;
     
     @Column(name = "nom", updatable = false, nullable = false)
     private String nom;
 
-    @Column(name = "mission", updatable = false, nullable = false)
+    @Column(name = "mission", nullable = false)
     private String mission;
 
     @Column(name = "dateCreation", updatable = false, nullable = false)
@@ -46,11 +46,11 @@ public class Entreprise implements Serializable{
         this.approbationType = approbationType;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(long id) {
         this.id = id;
     }
 

@@ -1,6 +1,5 @@
 package ModeleTest;
 
-import static ModeleTest.UtilisateurTest.enterpriseId;
 import ets.pfe.aqs.modele.ApprobationType;
 import ets.pfe.aqs.modele.Audit;
 import ets.pfe.aqs.modele.AuditType;
@@ -11,7 +10,6 @@ import ets.pfe.aqs.util.JPAUtility;
 import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,9 +28,9 @@ import org.junit.runners.MethodSorters;
 public class AuditTest {
 
     EntityManager entityManager;
-    static int auditId;
-    static int enterpriseId;
-    static int utilisateurId;
+    static long auditId;
+    static long enterpriseId;
+    static long utilisateurId;
 
     @BeforeClass
     public static void setUpClass() {

@@ -42,7 +42,7 @@ public class FormulaireTest {
             + " }";
 
     EntityManager entityManager;
-    static int formulaireId;
+    static long formulaireId;
 
     @BeforeClass
     public static void setUpClass() {

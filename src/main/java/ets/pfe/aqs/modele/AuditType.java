@@ -1,6 +1,5 @@
 package ets.pfe.aqs.modele;
 
-import ets.pfe.aqs.PfeAqsController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,11 +8,21 @@ import org.slf4j.LoggerFactory;
  * @author Zeldorine
  */
 public enum AuditType {
-    CREATION(1),
-    MODIFICATION(2),
+    CREATE_USER(1),
+    REVISION(2),
     CONNEXION(3),
     ACTIVATION(4),
-    DESACTIVATION(5);
+    DESACTIVATION(5),
+    DECONNEXION(6),
+    CREATE_ENTREPRISE(7),
+    GET_FORMULAIRE(8),
+    GET_PROCESSUS(12),
+    GET_WORKINSTRUCTION(13),
+    GET_PROCEDURE(14),
+    CREATE_FORMULAIRE(10),
+    CREATE_REVISION(11),
+    UPDATE_USER(15),
+    UPDATE_ENTERPRISE(16);
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditType.class);
     private final int valueInDB;

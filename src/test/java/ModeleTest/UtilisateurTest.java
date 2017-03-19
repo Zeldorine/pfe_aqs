@@ -30,8 +30,8 @@ public class UtilisateurTest {
 
     private static final String password = "password";
     EntityManager entityManager;
-    static int enterpriseId;
-    static int userId;
+    static long enterpriseId;
+    static long userId;
 
     @BeforeClass
     public static void setUpClass() {
@@ -121,7 +121,7 @@ public class UtilisateurTest {
         String passCrypt = SecurityUtil.cryptWithMD5(password);
 
         entityManager.getTransaction().begin();
-        Query query = entityManager.createNativeQuery("UPDATE Utilisateur SET mot_de_passe = '" + passCrypt + "' where id = " + userId);
+        Query query = entityManager.createNativeQuery("UPDATE test.Utilisateur SET mot_de_passe = '" + passCrypt + "' where id = " + userId);
         int result = query.executeUpdate();
         entityManager.getTransaction().commit();
 
@@ -131,7 +131,7 @@ public class UtilisateurTest {
     @Test
     public void test6RecoveryPassword() {
         String passCrypt = SecurityUtil.cryptWithMD5(password);
-        Query query = entityManager.createNativeQuery("SELECT mot_de_passe from Utilisateur where id = " + userId);
+        Query query = entityManager.createNativeQuery("SELECT mot_de_passe from test.Utilisateur where id = " + userId);
         List<String> result = query.getResultList();
         
         Assert.assertNotNull(result);

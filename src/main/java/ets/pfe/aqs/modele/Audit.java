@@ -19,10 +19,10 @@ public class Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private int id;
+    private long id;
 
     @Column(name = "utilisateur", updatable = false, nullable = false)
-    private int utilisateurId;
+    private long utilisateurId;
 
     @Column(name = "audit_type", updatable = false, nullable = false)
     private AuditType auditType;
@@ -35,26 +35,26 @@ public class Audit {
 
     public Audit(){}
     
-    public Audit(int utilisateurId, AuditType auditType, Date date, String objet) {
+    public Audit(long utilisateurId, AuditType auditType, Date date, String objet) {
         this.utilisateurId = utilisateurId;
         this.auditType = auditType;
         this.date = date;
         this.objet = objet;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(long id) {
         this.id = id;
     }
 
-    public int getUtilisateurId() {
+    public long getUtilisateurId() {
         return utilisateurId;
     }
 
-    public void setUtilisateurId(int utilisateurId) {
+    public void setUtilisateurId(long utilisateurId) {
         this.utilisateurId = utilisateurId;
     }
 

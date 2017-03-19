@@ -13,6 +13,7 @@ package ets.pfe.aqs.modele;
  * @version 1.0.0
  */
 public enum ApprobationType {
+    REJECTED(-1),
     ZERO_APPROBATION(0),
     ONE_APPROBATION(1),
     TWO_APPROBATION(2);

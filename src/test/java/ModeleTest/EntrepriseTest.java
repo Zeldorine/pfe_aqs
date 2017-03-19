@@ -5,10 +5,8 @@ import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.util.JPAUtility;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -26,7 +24,7 @@ import org.junit.runners.MethodSorters;
 public class EntrepriseTest {
 
     EntityManager entityManager;
-    static int enterpriseId;
+    static long enterpriseId;
 
     @BeforeClass
     public static void setUpClass() {

@@ -22,7 +22,7 @@ public class Formulaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private int id;
+    private long id;
 
     @Column(name = "nom", updatable = false, nullable = false)
     private String nom;
@@ -42,7 +42,7 @@ public class Formulaire {
     @Column(name = "createur", updatable = false, nullable = false)
     private int idCreateur;
 
-    @Column(name = "approbation", updatable = false, nullable = false)
+    @Column(name = "approbation", nullable = false)
     private int approbation;
     
     public Formulaire() {}
@@ -57,11 +57,11 @@ public class Formulaire {
         this.approbation = approbation;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(long id) {
         this.id = id;
     }
 

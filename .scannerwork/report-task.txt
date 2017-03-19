@@ -1,0 +1,5 @@
+projectKey=my:pfeAqs
+serverUrl=http://localhost:9000
+dashboardUrl=http://localhost:9000/dashboard/index/my:pfeAqs
+ceTaskId=AVrnc1tD1GQlFj2A4N5e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AVrnc1tD1GQlFj2A4N5e

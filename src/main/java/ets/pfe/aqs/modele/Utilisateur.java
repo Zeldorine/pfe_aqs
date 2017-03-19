@@ -21,7 +21,7 @@ public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private int id;
+    private long id;
     
     @Column(name = "nom_utilisateur", updatable = false, nullable = false)
     private String nomUtilisateur;
@@ -32,23 +32,23 @@ public class Utilisateur implements Serializable {
     @Column(name = "prenom", updatable = false, nullable = false)
     private String prenom;
     
-    @Column(name = "courriel", updatable = false, nullable = false)
+    @Column(name = "courriel", nullable = false)
     private String courriel;
     
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private Role role;
     
-    @Column(name = "actif", updatable = false, nullable = false)
+    @Column(name = "actif", nullable = false)
     private int actif;
     
     @Column(name = "id_entreprise", updatable = false, nullable = false)
-    private int entreprise;
+    private long entreprise;
 
     public Utilisateur() {
     }
 
-    public Utilisateur(String nomUtilisateur, String nom, String prenom, String courriel, Role role, int actif, int entreprise) {
+    public Utilisateur(String nomUtilisateur, String nom, String prenom, String courriel, Role role, int actif, long entreprise) {
         this.nomUtilisateur = nomUtilisateur;
         this.nom = nom;
         this.prenom = prenom;
@@ -58,11 +58,11 @@ public class Utilisateur implements Serializable {
         this.entreprise = entreprise;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(long id) {
         this.id = id;
     }
 
@@ -114,11 +114,11 @@ public class Utilisateur implements Serializable {
         this.actif = actif  ? 1 : 0;
     }
 
-    public int getEntreprise() {
+    public long getEntreprise() {
         return entreprise;
     }
 
-    public void setEntreprise(int entreprise) {
+    public void setEntreprise(long entreprise) {
         this.entreprise = entreprise;
     }
     
