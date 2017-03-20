@@ -32,9 +32,7 @@ public class LoginDaoImpl implements LoginDaoService {
         Integer result = (Integer)query.getSingleResult();
         Utilisateur utilisateur = null;
         
-        if(result == null){
-            return utilisateur;
-        } else {
+        if(result != null){
             Long id = result.longValue();
             utilisateur = entityManager.find(Utilisateur.class, id);
             LOGGER.info("User found : " + utilisateur.getNomUtilisateur());

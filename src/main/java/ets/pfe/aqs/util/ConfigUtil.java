@@ -5,6 +5,7 @@ package ets.pfe.aqs.util;
  * @author Zeldorine
  */
 public class ConfigUtil {
+    private String appName;
     private String serverPort;
     private String smtpHost;
     private String smtpPort;
@@ -12,6 +13,14 @@ public class ConfigUtil {
     private String pfeAqsEmailUsername;
     private String pfeAqsEmailPassword;
 
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+    
     public String getServerPort() {
         return serverPort;
     }

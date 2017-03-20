@@ -19,6 +19,7 @@
     </bean>
     
     <bean class="ets.pfe.aqs.util.ConfigUtil" id="configUtil">
+        <property name="appName"             value="${pfeAqs.app.name}"/>
         <property name="serverPort"             value="${pfeAqs.server.port}"/>
         <property name="smtpHost"               value="${pfeAqs.config.email.smtpHost}"/>
         <property name="smtpPort"               value="${pfeAqs.config.email.smtpPort}"/>
