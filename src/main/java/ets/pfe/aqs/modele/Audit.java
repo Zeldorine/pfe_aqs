@@ -33,8 +33,10 @@ public class Audit {
     @Column(name = "objet", updatable = false, nullable = false)
     private String objet;
 
-    public Audit(){}
-    
+    public Audit() {
+        //Empty because of jpa
+    }
+
     public Audit(long utilisateurId, AuditType auditType, Date date, String objet) {
         this.utilisateurId = utilisateurId;
         this.auditType = auditType;
@@ -44,10 +46,6 @@ public class Audit {
 
     public long getId() {
         return id;
-    }
-
-    private void setId(long id) {
-        this.id = id;
     }
 
     public long getUtilisateurId() {
@@ -81,6 +79,5 @@ public class Audit {
     public void setObjet(String objet) {
         this.objet = objet;
     }
-    
-    
+
 }

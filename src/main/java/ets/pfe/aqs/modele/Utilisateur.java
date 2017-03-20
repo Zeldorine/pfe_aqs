@@ -22,30 +22,31 @@ public class Utilisateur implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
-    
+
     @Column(name = "nom_utilisateur", updatable = false, nullable = false)
     private String nomUtilisateur;
-    
+
     @Column(name = "nom", updatable = false, nullable = false)
     private String nom;
-    
+
     @Column(name = "prenom", updatable = false, nullable = false)
     private String prenom;
-    
+
     @Column(name = "courriel", nullable = false)
     private String courriel;
-    
+
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private Role role;
-    
+
     @Column(name = "actif", nullable = false)
     private int actif;
-    
+
     @Column(name = "id_entreprise", updatable = false, nullable = false)
     private long entreprise;
 
     public Utilisateur() {
+        //Empty because of jpa
     }
 
     public Utilisateur(String nomUtilisateur, String nom, String prenom, String courriel, Role role, int actif, long entreprise) {
@@ -60,10 +61,6 @@ public class Utilisateur implements Serializable {
 
     public long getId() {
         return id;
-    }
-
-    private void setId(long id) {
-        this.id = id;
     }
 
     public String getNomUtilisateur() {
@@ -111,7 +108,7 @@ public class Utilisateur implements Serializable {
     }
 
     public void setActif(boolean actif) {
-        this.actif = actif  ? 1 : 0;
+        this.actif = actif ? 1 : 0;
     }
 
     public long getEntreprise() {
@@ -121,6 +118,5 @@ public class Utilisateur implements Serializable {
     public void setEntreprise(long entreprise) {
         this.entreprise = entreprise;
     }
-    
-    
+
 }

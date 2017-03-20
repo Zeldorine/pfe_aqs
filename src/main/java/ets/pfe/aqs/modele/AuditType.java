@@ -42,7 +42,7 @@ public enum AuditType {
             }
         }
         
-        LOGGER.warn("Cannot retrieve audit type with this value in db : " + value);
+        LOGGER.warn("Cannot retrieve audit type with this value in db : {}", value);
         
         return null;
     }

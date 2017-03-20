@@ -10,11 +10,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zeldorine
  */
-public class SecurityUtil {
+public abstract class SecurityUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqsServlet.class);
     private static final String MD5_ALGORITHM = "MD5";
 
+    private SecurityUtil(){}
+    
     public static String cryptWithMD5(String pass) {
         try {
             MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
@@ -22,7 +24,7 @@ public class SecurityUtil {
             
             md.reset();
             byte[] digested = md.digest(passBytes);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < digested.length; i++) {
                 sb.append(Integer.toHexString(0xff & digested[i]));
             }

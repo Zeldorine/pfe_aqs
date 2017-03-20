@@ -47,7 +47,7 @@ public class UtilisateurDaoTest {
     }
 
     @Test
-    public void createUser() {
+    public void creerUtilisateur() {
         try {
             UtilisateurDaoService dao = new UtilisateurDaoImpl();
             String uuid = UUID.randomUUID().toString();

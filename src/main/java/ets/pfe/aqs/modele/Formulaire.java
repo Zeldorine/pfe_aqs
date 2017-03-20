@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import org.json.JSONObject;
 
 /**
  *
@@ -16,7 +15,7 @@ import org.json.JSONObject;
 @Entity
 @Table(name = "\"formulaire\"")
 public class Formulaire {
-    
+
     public static final int NOM_LONGUEUR_MAX = 100;
 
     @Id
@@ -44,8 +43,10 @@ public class Formulaire {
 
     @Column(name = "approbation", nullable = false)
     private int approbation;
-    
-    public Formulaire() {}
+
+    public Formulaire() {
+        //Empty because of jpa
+    }
 
     public Formulaire(String nom, int version, String contenu, Date dateCreation, int idTemplate, int idCreateur, int approbation) {
         this.nom = nom;
@@ -61,10 +62,6 @@ public class Formulaire {
         return id;
     }
 
-    private void setId(long id) {
-        this.id = id;
-    }
-
     public String getNom() {
         return nom;
     }
@@ -72,7 +69,7 @@ public class Formulaire {
     public void setNom(String nom) {
         this.nom = nom;
     }
-    
+
     public int getVersion() {
         return version;
     }

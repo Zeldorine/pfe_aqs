@@ -14,10 +14,15 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * @author Zeldorine
  */
-public class PfeAqsApplication {
+public abstract class PfeAqsApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqsApplication.class);
+    private static final int DEFAULT_PORT = 8085;
     private static ConfigUtil config;
+    private static Server jettyServer;
+
+    private PfeAqsApplication() {
+    }
 
     public static void main(String[] args) throws Exception {
         ApplicationContext sprinContext = new ClassPathXmlApplicationContext("META-INF/spring/spring-context.xml");
@@ -28,7 +33,8 @@ public class PfeAqsApplication {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
 
-        Server jettyServer = new Server(Integer.valueOf(config.getServerPort()));
+        Integer port = config.getServerPort() == null ? DEFAULT_PORT : Integer.valueOf(config.getServerPort());
+        jettyServer = new Server(Integer.valueOf(port));
         jettyServer.setHandler(context);
 
         ServletHolder jerseyServlet = context.addServlet(
@@ -45,11 +51,24 @@ public class PfeAqsApplication {
             jettyServer.start();
             jettyServer.join();
         } finally {
-            jettyServer.destroy();
-            JPAUtility.close();
+            stop();
         }
     }
 
+    public static void stop() {
+        try {
+            jettyServer.stop();
+            while (jettyServer.isRunning()) {
+                jettyServer.stop();
+            }
+
+            jettyServer.destroy();
+            JPAUtility.close();
+        } catch (Exception ex) {
+            LOGGER.error("An error occured while stopping server", ex);
+        }
+    }
+    
     public static ConfigUtil getConfig() {
         return config;
     }

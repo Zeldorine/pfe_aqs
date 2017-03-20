@@ -2,7 +2,6 @@ package UtilTest;
 
 import ets.pfe.aqs.util.ConfigUtil;
 import ets.pfe.aqs.util.EmailUtil;
-import java.io.IOException;
 import javax.mail.MessagingException;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -27,8 +26,7 @@ public class EmailUtilTest {
         } catch (MessagingException ex) {
             ex.printStackTrace();
             fail();
-        } catch (IOException ex) {
-
+        } catch (Exception ex) {
             fail();
         }
     }

@@ -12,17 +12,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zeldorine
  */
-public class JPAUtility {
+public abstract class JPAUtility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JPAUtility.class);
     private static EntityManagerFactory emf;
 
+    private JPAUtility(){}
+    
     static {
         try {
             LOGGER.info("Create entity manager factory");
             emf = Persistence.createEntityManagerFactory("entityManager");
-        } catch (Throwable ex) {
-            System.err.println("Initial SessionFactory creation failed." + ex);
+        } catch (Exception ex) {
+            LOGGER.error("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -33,8 +35,8 @@ public class JPAUtility {
                 LOGGER.info("Create entity manager factory");
                 emf = Persistence.createEntityManagerFactory("entityManager");
             }
-        } catch (Throwable ex) {
-            System.err.println("Initial SessionFactory creation failed." + ex);
+        } catch (Exception ex) {
+            LOGGER.error("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -46,7 +48,7 @@ public class JPAUtility {
 
     public static synchronized void close() {
         LOGGER.info("Close entity manager factory");
-        
+
         if (emf != null && emf.isOpen()) {
             while (emf.isOpen()) {
                 emf.close();
@@ -62,16 +64,15 @@ public class JPAUtility {
      */
     public static synchronized void closeEntityManager(EntityManager entityManager) {
         LOGGER.info("Close entity manager");
-        
+
         if (entityManager != null) {
             try {
-                if (entityManager.getTransaction() != null) {
-                    while (entityManager.getTransaction().isActive()) {
-                        entityManager.getTransaction().rollback();
-                    }
+                while (entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
                 }
             } catch (IllegalStateException ex) {
                 LOGGER.warn("Cannot rollback: " + ex.getMessage());
+                throw ex;
             }
             try {
                 while (entityManager.isOpen()) {
@@ -79,6 +80,7 @@ public class JPAUtility {
                 }
             } catch (IllegalStateException ex) {
                 LOGGER.warn("Cannot close entity manager: " + ex.getMessage());
+                throw ex;
             }
         }
     }

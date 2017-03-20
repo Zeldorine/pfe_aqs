@@ -17,13 +17,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "\"entreprise\"")
-public class Entreprise implements Serializable{
+public class Entreprise implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
-    
+
     @Column(name = "nom", updatable = false, nullable = false)
     private String nom;
 
@@ -37,7 +37,9 @@ public class Entreprise implements Serializable{
     @Enumerated(EnumType.ORDINAL)
     private ApprobationType approbationType;
 
-    public Entreprise() {}
+    public Entreprise() {
+        //Empty because of jpa
+    }
 
     public Entreprise(String nom, String mission, Date dateCreation, ApprobationType approbationType) {
         this.nom = nom;
@@ -48,10 +50,6 @@ public class Entreprise implements Serializable{
 
     public long getId() {
         return id;
-    }
-
-    private void setId(long id) {
-        this.id = id;
     }
 
     public String getNom() {
