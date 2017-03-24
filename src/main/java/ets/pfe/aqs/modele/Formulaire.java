@@ -58,6 +58,17 @@ public class Formulaire {
         this.approbation = approbation;
     }
 
+    public Formulaire(int id, String nom, int version, String contenu, Date dateCreation, int idTemplate, int idCreateur, int approbation) {
+        this.id = id;
+        this.nom = nom;
+        this.version = version;
+        this.contenu = contenu;
+        this.dateCreation = dateCreation;
+        this.idTemplate = idTemplate;
+        this.idCreateur = idCreateur;
+        this.approbation = approbation;
+    }
+
     public long getId() {
         return id;
     }

@@ -17,6 +17,8 @@ public interface PfeAqsService {
 
     public Utilisateur login(String name, String password) throws PfeAqsException;
 
+    public void logout() throws PfeAqsException;
+
     public Formulaire getForm(String name) throws PfeAqsException;
 
     public List<Formulaire> getAllForm() throws PfeAqsException;

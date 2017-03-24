@@ -1,6 +1,8 @@
 package ets.pfe.aqs;
 
 import ets.pfe.aqs.exception.PfeAqsException;
+import ets.pfe.aqs.modele.Entreprise;
+import ets.pfe.aqs.modele.Formulaire;
 import ets.pfe.aqs.modele.Utilisateur;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,10 @@ public class PfeAqsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PfeAqsServlet.class);
     private static final String USERNAME = "username";
-    private static final String NAME = "name";
+    private static final String NAME = "nom";
     private static final String USER = "user";
+    private static final String ENTERPRISE = "enterprise";
+    private static final String FORM = "form";
     private static final String ID = "id";
     private static final String ACTIVATE = "activate";
 
@@ -69,24 +73,20 @@ public class PfeAqsServlet extends HttpServlet {
         }
     }
 
-    @POST
-    @Path("getForm")
+    @GET
+    @Path("logout")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getForm(@FormParam("name") String json) {
-        LOGGER.info("[Servlet][Rest-service] Get form with parameters: {}", json);
-        JSONObject data = new JSONObject(json);
-        String formName = data.getString(NAME);
+    public Response logout() {
+        LOGGER.info("[Servlet][Rest-service] logout");
 
         try {
-            JSONObject form = new JSONObject(pfeAqs.getForm(formName));
-            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(form.toString()).build();
-        } catch (PfeAqsException e) {
-            LOGGER.warn("No user found for username " + formName, e);
-            return Response.status(Status.NOT_FOUND).entity("No Form found for name " + formName).build();
+            pfeAqs.logout();
         } catch (Exception e) {
-            LOGGER.error("An error occured during get form with name :  " + formName, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during get form with form name : " + formName + ".").build();
+            LOGGER.error("An error occured during logout user", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during logout user").build();
         }
+
+        return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).build();
     }
 
     @GET
@@ -107,47 +107,116 @@ public class PfeAqsServlet extends HttpServlet {
         }
     }
 
-    /*  @POST
+    @POST
     @Path("approveForm")
     @Produces(MediaType.APPLICATION_JSON)
     public Response approveForm(@FormParam("id") String json) throws PfeAqsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("[Servlet][Rest-service] Approve form");
+        JSONObject data = new JSONObject(json);
+        Long id = data.getLong(ID);
+
+        try {
+            JSONObject form = new JSONObject(pfeAqs.approveForm(id));
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(form.toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("An error occurred while approving form {}", id, e);
+            return Response.status(Status.NOT_FOUND).entity("An error occured while approving form." + id).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured approving form {}", id, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured while approving form." + id).build();
+        }
     }
 
     @POST
     @Path("rejectForm")
     @Produces(MediaType.APPLICATION_JSON)
     public Response rejectForm(@FormParam("id") String json) throws PfeAqsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("[Servlet][Rest-service] Reject form");
+        JSONObject data = new JSONObject(json);
+        Long id = data.getLong(ID);
+
+        try {
+            JSONObject form = new JSONObject(pfeAqs.rejectForm(id));
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(form.toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("An error occurred while rejecting form {}", id, e);
+            return Response.status(Status.NOT_FOUND).entity("An error occured while rejecting form." + id).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured rejecting form {}", id, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured while rejecting form." + id).build();
+        }
     }
 
     @POST
     @Path("createForm")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createForm(@FormParam("form") String jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("[Servlet][Rest-service] Add form with parameters: {}", jsonData);
+        JSONObject formJson = (new JSONObject(jsonData)).getJSONObject(FORM);
+        String formName = formJson.getString(NAME);
+        Formulaire form = null;
+
+        try {
+            form = pfeAqs.createForm(formJson);
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(form).toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("Cannot create form" + form.getNom(), e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot create form " + formName).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during adding a form with name :  " + formName, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during adding a form name : " + formName + ".").build();
+        }
     }
 
     @POST
     @Path("addEnterprise")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addEnterprise(@FormParam("enterprise") String jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("[Servlet][Rest-service] Add enterprise with parameters: {}", jsonData);
+        JSONObject enterpriseJson = (new JSONObject(jsonData)).getJSONObject(ENTERPRISE);
+        String enterpriseName = enterpriseJson.getString(NAME);
+        Entreprise enterprise = null;
+
+        try {
+            enterprise = pfeAqs.addEnterprise(enterpriseJson);
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(enterprise).toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("Cannot create user" + enterprise.getNom(), e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot create enterprise " + enterpriseName).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during adding a enterprise with name :  " + enterpriseName, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during adding a enterprise name : " + enterpriseName + ".").build();
+        }
     }
 
     @POST
     @Path("updateEnterprise")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateEnterprise(@FormParam("enterprise") String jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
+        LOGGER.info("[Servlet][Rest-service] Update enterprise with parameters: {}", jsonData);
+        JSONObject enterpriseJson = (new JSONObject(jsonData)).getJSONObject(ENTERPRISE);
+        String enterpriseName = enterpriseJson.getString(NAME);
+        Entreprise enterprise = null;
+
+        try {
+            enterprise = pfeAqs.updateEnterprise(enterpriseJson);
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(enterprise).toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("Cannot update enterprise" + enterprise.getNom(), e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot update enterprise " + enterpriseName).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during updating a enterprise with name :  " + enterpriseName, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during updating a enterprise name : " + enterpriseName + ".").build();
+        }
+    }
+
     @POST
     @Path("addUser")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(@FormParam("user") String jsonData) throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] Add user with parameters: {}", jsonData);
         JSONObject userJson = (new JSONObject(jsonData)).getJSONObject(USER);
-        String userName = userJson.getString("nom");
+        String userName = userJson.getString(NAME);
         Utilisateur user = null;
 
         try {
@@ -168,18 +237,18 @@ public class PfeAqsServlet extends HttpServlet {
     public Response updateUser(@FormParam("user") String jsonData) throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] Update user with parameters: {}", jsonData);
         JSONObject userJson = (new JSONObject(jsonData)).getJSONObject(USER);
-        String userName = userJson.getString("nom");
+        String userName = userJson.getString(NAME);
         Utilisateur user = null;
 
         try {
             user = pfeAqs.updateUser(userJson);
             return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(user).toString()).build();
         } catch (PfeAqsException e) {
-            LOGGER.warn("Cannot create user" + user.getNom(), e);
-            return Response.status(Status.NOT_FOUND).entity("Cannot create user " + userName).build();
+            LOGGER.warn("Cannot update user" + user.getNom(), e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot update user " + userName).build();
         } catch (Exception e) {
-            LOGGER.error("An error occured during adding a user with name :  " + userName, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during adding a user name : " + userName + ".").build();
+            LOGGER.error("An error occured during updating a user with name :  " + userName, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during updating a user name : " + userName + ".").build();
         }
     }
 

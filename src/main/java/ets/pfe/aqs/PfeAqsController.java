@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import ets.pfe.aqs.dao.service.LoginDaoService;
 import ets.pfe.aqs.dao.service.UtilisateurDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
+import ets.pfe.aqs.modele.ApprobationType;
 import ets.pfe.aqs.modele.Audit;
 import ets.pfe.aqs.modele.AuditType;
 import ets.pfe.aqs.modele.Entreprise;
@@ -23,6 +24,7 @@ import ets.pfe.aqs.util.ConfigUtil;
 import ets.pfe.aqs.util.EmailUtil;
 import ets.pfe.aqs.util.SecurityUtil;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import org.json.JSONObject;
@@ -57,7 +59,8 @@ public class PfeAqsController implements PfeAqsService {
         return "Hello ! Welcome to Pfe AQS ! ";
     }
 
-    public Utilisateur login(String name, String password) throws PfeAqsException {
+    @Override
+    public Utilisateur login(final String name, final String password) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", name);
 
         try {
@@ -76,9 +79,22 @@ public class PfeAqsController implements PfeAqsService {
         return authenticateUser;
     }
 
-    public Formulaire getForm(String formName) throws PfeAqsException {
+    @Override
+    public void logout() throws PfeAqsException {
+        LOGGER.info("[Controller] logout the user {}", authenticateUser.getId());
+        auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.DECONNEXION, Calendar.getInstance().getTime(), config.getAppName()));
+        authenticateUser = null;
+    }
+
+    @Override
+    public Formulaire getForm(final String formName) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", formName);
         Formulaire form = null;
+
+        if (authenticateUserIsEditorOrApprover()) {
+            LOGGER.error("Authenticated user has not appropriate role to get form, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to get form, it is a " + authenticateUser.getRole());
+        }
 
         try {
             boolean isApprover = authenticateUser.getRole() == Role.APPROBATEUR;
@@ -97,9 +113,19 @@ public class PfeAqsController implements PfeAqsService {
         return form;
     }
 
+    private boolean authenticateUserIsEditorOrApprover() {
+        return authenticateUser.getRole() != Role.EDITEUR || authenticateUser.getRole() != Role.APPROBATEUR;
+    }
+
+    @Override
     public List<Formulaire> getAllForm() throws PfeAqsException {
         LOGGER.info("[Controller] Get all form");
         List<Formulaire> forms = null;
+
+        if (authenticateUserIsEditorOrApprover()) {
+            LOGGER.error("Authenticated user has not appropriate role to get forms, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to get forms, it is a " + authenticateUser.getRole());
+        }
 
         try {
             boolean isApprover = authenticateUser.getRole() == Role.APPROBATEUR;
@@ -118,32 +144,186 @@ public class PfeAqsController implements PfeAqsService {
         return forms;
     }
 
-    public Formulaire approveForm(long id) throws PfeAqsException {
-        throw new UnsupportedOperationException(); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public Formulaire approveForm(final long id) throws PfeAqsException {
+        LOGGER.info("[Controller] Approve form {}", id);
+        Formulaire form = null;
+
+        if (authenticateUser.getRole() != Role.APPROBATEUR) {
+            LOGGER.error("Authenticated user has not appropriate role to approve forms, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to approve forms, it is a " + authenticateUser.getRole());
+        }
+
+        try {
+            form = documentDao.approveForm(id);
+
+            if (form != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.APPROVE_FORM, Calendar.getInstance().getTime(), id + ""));
+            } else {
+                throw new PfeAqsException("An error occurred while approving the form " + id);
+            }
+        } catch (NoResultException e) {
+            LOGGER.warn("An error occurred while approving the form {}, it no exists", id, e);
+            throw new PfeAqsException("No form found for id " + id);
+        }
+
+        return form;
     }
 
-    public Formulaire rejectForm(long id) throws PfeAqsException {
-        throw new UnsupportedOperationException(); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public Formulaire rejectForm(final long id) throws PfeAqsException {
+        LOGGER.info("[Controller] Reject form {}", id);
+        Formulaire form = null;
+
+        if (authenticateUser.getRole() != Role.APPROBATEUR) {
+            LOGGER.error("Authenticated user has not appropriate role to reject forms, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to reject forms, it is a " + authenticateUser.getRole());
+        }
+
+        try {
+            form = documentDao.rejectForm(id);
+
+            if (form != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.REJECT_FORM, Calendar.getInstance().getTime(), id + ""));
+            } else {
+                throw new PfeAqsException("An error occurred while rejecting the form " + id);
+            }
+        } catch (NoResultException e) {
+            LOGGER.warn("An error occurred while rejecting the form {}, it no exists", id, e);
+            throw new PfeAqsException("No form found for id " + id);
+        }
+
+        return form;
     }
 
-    public Formulaire createForm(JSONObject jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException(); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public Formulaire createForm(final JSONObject jsonData) throws PfeAqsException {
+        LOGGER.info("[Controller] Create form/revision");
+        Formulaire form = null;
+
+        if (authenticateUserIsEditorOrApprover()) {
+            LOGGER.error("Authenticated user has not appropriate role to create form, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to create form, it is a " + authenticateUser.getRole());
+        }
+
+        try {
+            form = documentDao.createForm(getFormFromJson(jsonData));
+
+            if (form != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_FORMULAIRE, Calendar.getInstance().getTime(), form.getId() + ""));
+            } else {
+                throw new PfeAqsException("An error occurred while creating the form/revision ");
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occurred while creating the form/revision", e);
+            throw new PfeAqsException("No form found for id ");
+        }
+
+        return form;
     }
 
-    public Entreprise addEnterprise(JSONObject jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException(); //To change body of generated methods, choose Tools | Templates.
+    private Formulaire getFormFromJson(final JSONObject jsonData) throws PfeAqsException {
+        Integer id = null;
+        if (jsonData.has("id")) {
+            id = jsonData.getInt("id");
+        }
+
+        String nom = jsonData.getString("nom");
+        int version = jsonData.getInt("version");
+        String contenu = jsonData.getString("contenu");
+        Date dateCreation = Calendar.getInstance().getTime();
+        int idTemplate = jsonData.getInt("idTemplate");
+        Long idCreateur = authenticateUser.getId();
+        int approbation = enterpriseDao.getApprobationLevel(authenticateUser.getEntreprise());
+
+        if (id == null) {
+            return new Formulaire(nom, version, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+        } else {
+            return new Formulaire(idCreateur.intValue(), nom, 0, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+        }
     }
 
-    public Entreprise updateEnterprise(JSONObject jsonData) throws PfeAqsException {
-        throw new UnsupportedOperationException(); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public Entreprise addEnterprise(final JSONObject jsonData) throws PfeAqsException {
+        LOGGER.info("[Controller] Add enterprise");
+
+        Role authenticatedUserRole = authenticateUser.getRole();
+        if (authenticatedUserRole != Role.ADMIN_SYSTEM) {
+            LOGGER.error("Authenticated user has not appropriate role to add a enterprise, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to add a enterprise, it is a " + authenticateUser.getRole());
+        }
+        Entreprise enterprise = null;
+
+        try {
+            enterprise = enterpriseDao.ajouterEntreprise(getEnterpriseFromJson(jsonData));
+
+            if (enterprise != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_ENTREPRISE, Calendar.getInstance().getTime(), enterprise.getId() + ""));
+            } else {
+                throw new PfeAqsException("An error occurred during creating a enterprise");
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occurred during creating a enterprise", e);
+            throw new PfeAqsException("An error occurred during creating a enterprise");
+        }
+
+        return enterprise;
     }
 
-    public Utilisateur addUser(JSONObject jsonData) throws PfeAqsException {
+    @Override
+    public Entreprise updateEnterprise(final JSONObject jsonData) throws PfeAqsException {
+        LOGGER.info("[Controller] Update enterprise");
+
+        Role authenticatedUserRole = authenticateUser.getRole();
+        if (authenticatedUserRole != Role.ADMIN_SYSTEM) {
+            LOGGER.error("Authenticated user has not appropriate role to update a enterprise, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to update a enterprise, it is a " + authenticateUser.getRole());
+        }
+
+        Entreprise enterprise = getEnterpriseFromJson(jsonData);
+
+        try {
+            enterprise = enterpriseDao.updateEntreprise(enterprise);
+
+            if (enterprise != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.UPDATE_ENTERPRISE, Calendar.getInstance().getTime(), enterprise.getId() + ""));
+            } else {
+                throw new PfeAqsException("An error occurred during updating a enterprise " + enterprise.getId());
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occurred during updating a enterprise {}", enterprise.getId(), e);
+            throw new PfeAqsException("An error occurred during updating a enterprise " + enterprise.getId());
+        }
+
+        return enterprise;
+    }
+
+    private Entreprise getEnterpriseFromJson(final JSONObject jsonData) {
+        Integer id = null;
+        if (jsonData.has("id")) {
+            id = jsonData.getInt("id");
+        }
+
+        String nom = jsonData.getString("nom");
+        String mission = jsonData.getString("mission");
+        Date dateCreation = Calendar.getInstance().getTime();
+        ApprobationType approbationType = ApprobationType.valueOf(jsonData.getString("approbationType"));
+
+        if (id == null) {
+            return new Entreprise(nom, mission, dateCreation, approbationType);
+        } else {
+            return new Entreprise(id, nom, mission, dateCreation, approbationType);
+        }
+    }
+
+    @Override
+    public Utilisateur addUser(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Add user");
 
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
-            throw new PfeAqsException("Authenticated user has not appropriate role to create a user");
+            LOGGER.error("Authenticated user has not appropriate role to add a user, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to add a user, it is a " + authenticateUser.getRole());
         }
         Utilisateur user = null;
 
@@ -165,7 +345,7 @@ public class PfeAqsController implements PfeAqsService {
         return user;
     }
 
-    private Utilisateur getUserFromJson(JSONObject jsonData) {
+    private Utilisateur getUserFromJson(final JSONObject jsonData) {
         Integer id = null;
         if (jsonData.has("id")) {
             id = jsonData.getInt("id");
@@ -186,12 +366,14 @@ public class PfeAqsController implements PfeAqsService {
         }
     }
 
-    public Utilisateur updateUser(JSONObject jsonData) throws PfeAqsException {
+    @Override
+    public Utilisateur updateUser(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Update user");
 
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
-            throw new PfeAqsException("Authenticated user has not appropriate role to create a user");
+            LOGGER.error("Authenticated user has not appropriate role to update a user, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to update a user, it is a " + authenticateUser.getRole());
         }
 
         Utilisateur user = getUserFromJson(jsonData);
@@ -212,10 +394,12 @@ public class PfeAqsController implements PfeAqsService {
         return user;
     }
 
-    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException {
+    @Override
+    public Utilisateur activateUtilisateur(final Long id, final boolean activate) throws PfeAqsException {
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
-            throw new PfeAqsException("Authenticated user has not appropriate role to create a user");
+            LOGGER.error("Authenticated user has not appropriate role to activate/deactivate a user, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to activate/deactivate a user, it is a " + authenticateUser.getRole());
         }
 
         String logInfo = activate ? "activating" : "deactivating";

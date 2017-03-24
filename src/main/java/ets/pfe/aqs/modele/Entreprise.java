@@ -48,6 +48,14 @@ public class Entreprise implements Serializable {
         this.approbationType = approbationType;
     }
 
+    public Entreprise(int id, String nom, String mission, Date dateCreation, ApprobationType approbationType) {
+        this.id = id;
+        this.nom = nom;
+        this.mission = mission;
+        this.dateCreation = dateCreation;
+        this.approbationType = approbationType;
+    }
+
     public long getId() {
         return id;
     }

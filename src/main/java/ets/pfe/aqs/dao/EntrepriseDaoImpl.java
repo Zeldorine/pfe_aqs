@@ -36,7 +36,7 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
 
     @Override
     public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException {
-        LOGGER.info("Activate user with id: " + newEnterprise.getNom());
+        LOGGER.info("update enterprise with id: " + newEnterprise.getNom());
         EntityManager entityManager = JPAUtility.openEntityManager();
         Entreprise oldEnterprise = entityManager.find(Entreprise.class, newEnterprise.getId());
 
@@ -55,6 +55,22 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
         return oldEnterprise;
     }
 
+    @Override
+    public int getApprobationLevel(Long id)throws PfeAqsException {
+        LOGGER.info("Get approbation level for enterprise with id: " + id);
+        EntityManager entityManager = JPAUtility.openEntityManager();
+        Entreprise enterprise = entityManager.find(Entreprise.class, id);
+
+        if (enterprise != null) {
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("Approbation level for enterprise with id: {}, is ", id, enterprise.getApprobationType().getTotalApprobation());
+            return enterprise.getApprobationType().getTotalApprobation();
+        } else {
+            throw new PfeAqsException("The entreprise " + enterprise.getNom() + " dosen't exists in database.");
+        }
+    }
+    
+    @Override
     public List<Entreprise> getEnterprises() throws PfeAqsException {
         LOGGER.info("Get all enterprises");
 
