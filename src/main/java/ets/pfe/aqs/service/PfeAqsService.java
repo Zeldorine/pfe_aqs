@@ -5,6 +5,7 @@ import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.modele.Formulaire;
 import ets.pfe.aqs.modele.Utilisateur;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  *
@@ -24,15 +25,15 @@ public interface PfeAqsService {
 
     public Formulaire rejectForm(long id) throws PfeAqsException;
 
-    public Formulaire createForm(String jsonData) throws PfeAqsException;
+    public Formulaire createForm(JSONObject jsonData) throws PfeAqsException;
 
-    public Entreprise addEnterprise(String jsonData) throws PfeAqsException;
+    public Entreprise addEnterprise(JSONObject jsonData) throws PfeAqsException;
 
-    public Entreprise updateEnterprise(String jsonData) throws PfeAqsException;
+    public Entreprise updateEnterprise(JSONObject jsonData) throws PfeAqsException;
 
-    public Utilisateur addUser(String jsonData) throws PfeAqsException;
+    public Utilisateur addUser(JSONObject jsonData) throws PfeAqsException;
 
-    public Utilisateur updateUser(String jsonData) throws PfeAqsException;
+    public Utilisateur updateUser(JSONObject jsonData) throws PfeAqsException;
 
     public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException;
 }

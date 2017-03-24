@@ -58,6 +58,17 @@ public class Utilisateur implements Serializable {
         this.actif = actif;
         this.entreprise = entreprise;
     }
+    
+    public Utilisateur(int id, String nomUtilisateur, String nom, String prenom, String courriel, Role role, int actif, long entreprise) {
+        this.id = id;
+        this.nomUtilisateur = nomUtilisateur;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.courriel = courriel;
+        this.role = role;
+        this.actif = actif;
+        this.entreprise = entreprise;
+    }
 
     public long getId() {
         return id;

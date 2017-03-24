@@ -12,6 +12,7 @@ public class ConfigUtil {
     private String fromEmail;
     private String pfeAqsEmailUsername;
     private String pfeAqsEmailPassword;
+    private String defaultPass;
 
     public String getAppName() {
         return appName;
@@ -67,5 +68,13 @@ public class ConfigUtil {
 
     public void setPfeAqsEmailPassword(String pfeAqsEmailPassword) {
         this.pfeAqsEmailPassword = pfeAqsEmailPassword;
+    }
+
+    public String getDefaultPass() {
+        return defaultPass;
+    }
+
+    public void setDefaultPass(String defaultPass) {
+        this.defaultPass = defaultPass;
     }
 }

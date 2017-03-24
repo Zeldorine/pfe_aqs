@@ -51,6 +51,11 @@ public class FormulaireTest {
 
     @AfterClass
     public static void tearDownClass() {
+                EntityManager em = JPAUtility.openEntityManager();
+        em.getTransaction().begin();
+        em.createNativeQuery("DELETE FROM FORMULAIRE").executeUpdate();
+        em.getTransaction().commit();
+        JPAUtility.closeEntityManager(em);
         JPAUtility.close();
     }
 

@@ -26,5 +26,6 @@
         <property name="fromEmail"              value="${pfeAqs.config.email.fromEmail}"/>
         <property name="pfeAqsEmailUsername"    value="${pfeAqs.config.email.username}"/>
         <property name="pfeAqsEmailPassword"    value="${pfeAqs.config.email.password}"/>
+        <property name="defaultPass"    value="${pfeAqs.default.pass}"/>
     </bean>
 </beans>

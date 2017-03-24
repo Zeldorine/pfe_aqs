@@ -39,6 +39,11 @@ public class AuditTest {
 
     @AfterClass
     public static void tearDownClass() {
+                EntityManager em = JPAUtility.openEntityManager();
+        em.getTransaction().begin();
+        em.createNativeQuery("DELETE FROM AUDIT").executeUpdate();
+        em.getTransaction().commit();
+        JPAUtility.closeEntityManager(em);
         JPAUtility.close();
     }
 

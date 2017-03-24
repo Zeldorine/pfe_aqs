@@ -7,6 +7,7 @@ import ets.pfe.aqs.modele.Role;
 import ets.pfe.aqs.modele.Utilisateur;
 import ets.pfe.aqs.util.JPAUtility;
 import ets.pfe.aqs.util.SecurityUtil;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import org.junit.After;
@@ -32,7 +33,11 @@ public class UtilisateurDaoTest {
 
     @AfterClass
     public static void tearDownClass() {
-
+        EntityManager em = JPAUtility.openEntityManager();
+        em.getTransaction().begin();
+        em.createNativeQuery("DELETE FROM UTILISATEUR").executeUpdate();
+        em.getTransaction().commit();
+        JPAUtility.closeEntityManager(em);
         JPAUtility.close();
     }
 
@@ -73,6 +78,36 @@ public class UtilisateurDaoTest {
     }
 
     @Test
+    public void getUsersByEnterpriseTest() {
+                try {
+            UtilisateurDaoService dao = new UtilisateurDaoImpl();
+            String uuid = UUID.randomUUID().toString();
+            Utilisateur utilisateur = new Utilisateur(uuid, "nom", "prenom", "nom@mail.com", Role.EDITEUR, 1, 1);
+            dao.creerUtilisateur(utilisateur);
+
+            List<Utilisateur> user = dao.getUsersByEnterprise(1l);
+            
+            Assert.assertNotNull(user);
+            Assert.assertEquals(1, user.size());
+            Utilisateur utilisateurToCheck = user.get(0);
+            Assert.assertEquals(utilisateur.getId(), utilisateurToCheck.getId());
+            Assert.assertEquals(utilisateur.getCourriel(), utilisateurToCheck.getCourriel());
+            Assert.assertEquals(utilisateur.getEntreprise(), utilisateurToCheck.getEntreprise());
+            Assert.assertEquals(utilisateur.getNom(), utilisateurToCheck.getNom());
+            Assert.assertEquals(utilisateur.getNomUtilisateur(), utilisateurToCheck.getNomUtilisateur());
+            Assert.assertEquals(utilisateur.getPrenom(), utilisateurToCheck.getPrenom());
+            Assert.assertEquals(utilisateur.getRole(), utilisateurToCheck.getRole());
+
+            Utilisateur utilisateurToRemove = entityManager.find(Utilisateur.class, utilisateur.getId());
+            entityManager.getTransaction().begin();
+            entityManager.remove(utilisateurToRemove);
+            entityManager.getTransaction().commit();
+        } catch (PfeAqsException ex) {
+            fail();
+        }
+    }
+
+    @Test
     public void ActivateUser() {
         try {
             UtilisateurDaoService dao = new UtilisateurDaoImpl();
@@ -87,7 +122,7 @@ public class UtilisateurDaoTest {
             entityManager.remove(entityManager.find(Utilisateur.class, utilisateur.getId()));
             entityManager.getTransaction().commit();
         } catch (PfeAqsException ex) {
-             fail();
+            fail();
         }
     }
 
@@ -106,7 +141,7 @@ public class UtilisateurDaoTest {
             entityManager.remove(entityManager.find(Utilisateur.class, utilisateur.getId()));
             entityManager.getTransaction().commit();
         } catch (PfeAqsException ex) {
-             fail();
+            fail();
         }
     }
 

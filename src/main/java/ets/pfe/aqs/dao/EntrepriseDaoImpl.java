@@ -4,7 +4,9 @@ import ets.pfe.aqs.dao.service.EntrepriseDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.util.JPAUtility;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 public class EntrepriseDaoImpl implements EntrepriseDaoService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseDaoImpl.class);
+    private static final String GET_ALL_ENTERPRISES_QUERY = "From Entreprise";
 
     @Override
     public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException {
@@ -50,6 +53,19 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
         LOGGER.info("Enterprise: " + oldEnterprise.getNom() + " updated");
 
         return oldEnterprise;
+    }
+
+    public List<Entreprise> getEnterprises() throws PfeAqsException {
+        LOGGER.info("Get all enterprises");
+
+        EntityManager entityManager = JPAUtility.openEntityManager();
+        TypedQuery<Entreprise> query = entityManager.createQuery(GET_ALL_ENTERPRISES_QUERY, Entreprise.class);
+        List<Entreprise> enterprises = query.getResultList();
+
+        JPAUtility.closeEntityManager(entityManager);
+
+        LOGGER.info("{} enterprises are found " + enterprises.size());
+        return enterprises;
     }
 
 }
