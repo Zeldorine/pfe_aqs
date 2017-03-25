@@ -102,6 +102,25 @@ public class EnterpriseDaoTest {
             fail();
         }
     }
+    
+    @Test
+    public void getEntreprisesLevelTest() {
+        try {
+            EntrepriseDaoService dao = new EntrepriseDaoImpl();
+            Date now = Calendar.getInstance().getTime();
+            Entreprise entreprise = new Entreprise("ENT_Test", "mission d'insertion", now, ApprobationType.ONE_APPROBATION);
+            entreprise = dao.ajouterEntreprise(entreprise);
+
+            Assert.assertEquals(ApprobationType.ONE_APPROBATION.getTotalApprobation(), dao.getApprobationLevel(entreprise.getId()).intValue());
+
+            Entreprise entrepriseToRemove = entityManager.find(Entreprise.class, entreprise.getId());
+            entityManager.getTransaction().begin();
+            entityManager.remove(entrepriseToRemove);
+            entityManager.getTransaction().commit();
+        } catch (PfeAqsException ex) {
+            fail();
+        }
+    }
 
     @Test
     public void updateEntrepriseTest() {

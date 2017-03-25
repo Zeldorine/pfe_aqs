@@ -16,5 +16,5 @@ public interface EntrepriseDaoService {
 
     public List<Entreprise> getEnterprises() throws PfeAqsException;
 
-    public int getApprobationLevel(Long id) throws PfeAqsException;
+    public Integer getApprobationLevel(Long id) throws PfeAqsException;
 }

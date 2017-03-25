@@ -56,7 +56,7 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
     }
 
     @Override
-    public int getApprobationLevel(Long id)throws PfeAqsException {
+    public Integer getApprobationLevel(Long id)throws PfeAqsException {
         LOGGER.info("Get approbation level for enterprise with id: " + id);
         EntityManager entityManager = JPAUtility.openEntityManager();
         Entreprise enterprise = entityManager.find(Entreprise.class, id);
