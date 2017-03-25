@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface EntrepriseDaoService {
 
-    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException;
+    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException, Exception;
 
-    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException;
+    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException, Exception;
 
-    public List<Entreprise> getEnterprises() throws PfeAqsException;
+    public List<Entreprise> getEnterprises() throws PfeAqsException, Exception;
 
-    public Integer getApprobationLevel(Long id) throws PfeAqsException;
+    public Integer getApprobationLevel(Long id) throws PfeAqsException, Exception;
 }

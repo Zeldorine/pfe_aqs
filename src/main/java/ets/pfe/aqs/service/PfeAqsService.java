@@ -13,8 +13,6 @@ import org.json.JSONObject;
  */
 public interface PfeAqsService {
 
-    public String sayHello();
-
     public Utilisateur login(String name, String password) throws PfeAqsException;
 
     public void logout() throws PfeAqsException;

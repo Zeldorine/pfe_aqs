@@ -46,13 +46,6 @@ public class PfeAqsServlet extends HttpServlet {
         }
     }
 
-    @GET
-    @Path("test")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response test() {
-        return Response.status(200).type(MediaType.TEXT_PLAIN).entity(pfeAqs.sayHello()).build();
-    }
-
     @POST
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)

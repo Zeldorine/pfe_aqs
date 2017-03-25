@@ -3,7 +3,6 @@
   <persistence-unit name="entityManager" transaction-type="RESOURCE_LOCAL">
     <description>JPA pfe</description>
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    <class>ets.pfe.aqs.modele.TestDao</class>
     <class>ets.pfe.aqs.modele.Entreprise</class>
     <class>ets.pfe.aqs.modele.Utilisateur</class>
     <class>ets.pfe.aqs.modele.Audit</class>

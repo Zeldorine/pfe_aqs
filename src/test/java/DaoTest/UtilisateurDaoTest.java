@@ -2,7 +2,6 @@ package DaoTest;
 
 import ets.pfe.aqs.dao.UtilisateurDaoImpl;
 import ets.pfe.aqs.dao.service.UtilisateurDaoService;
-import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.Role;
 import ets.pfe.aqs.modele.Utilisateur;
 import ets.pfe.aqs.util.JPAUtility;
@@ -35,7 +34,7 @@ public class UtilisateurDaoTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM UTILISATEUR").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.UTILISATEUR").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();
@@ -72,7 +71,7 @@ public class UtilisateurDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -102,7 +101,7 @@ public class UtilisateurDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(utilisateurToRemove);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -121,7 +120,7 @@ public class UtilisateurDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entityManager.find(Utilisateur.class, utilisateur.getId()));
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -140,7 +139,7 @@ public class UtilisateurDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entityManager.find(Utilisateur.class, utilisateur.getId()));
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -167,7 +166,7 @@ public class UtilisateurDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }

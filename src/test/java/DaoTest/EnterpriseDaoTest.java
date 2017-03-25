@@ -2,7 +2,6 @@ package DaoTest;
 
 import ets.pfe.aqs.dao.EntrepriseDaoImpl;
 import ets.pfe.aqs.dao.service.EntrepriseDaoService;
-import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.ApprobationType;
 import ets.pfe.aqs.modele.Entreprise;
 import ets.pfe.aqs.util.JPAUtility;
@@ -35,7 +34,7 @@ public class EnterpriseDaoTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM ENTREPRISE").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.ENTREPRISE").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();
@@ -70,7 +69,7 @@ public class EnterpriseDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entrepriseToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -98,7 +97,7 @@ public class EnterpriseDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entrepriseToRemove);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -117,7 +116,7 @@ public class EnterpriseDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entrepriseToRemove);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -145,7 +144,7 @@ public class EnterpriseDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(entrepriseToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }

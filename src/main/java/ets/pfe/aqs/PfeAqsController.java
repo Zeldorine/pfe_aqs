@@ -55,10 +55,19 @@ public class PfeAqsController implements PfeAqsService {
         userDao = new UtilisateurDaoImpl();
     }
 
-    public String sayHello() {
-        return "Hello ! Welcome to Pfe AQS ! ";
+    public PfeAqsController(ConfigUtil config) throws JAXBException {
+        this.config = config;
+        loginDao = new LoginDaoImpl();
+        auditDao = new AuditDaoImpl();
+        documentDao = new DocumentDaoImpl();
+        enterpriseDao = new EntrepriseDaoImpl();
+        userDao = new UtilisateurDaoImpl();
     }
 
+    void setAuthenticateUser(Utilisateur user){
+        this.authenticateUser = user;
+    }
+    
     @Override
     public Utilisateur login(final String name, final String password) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", name);
@@ -74,6 +83,9 @@ public class PfeAqsController implements PfeAqsService {
         } catch (NoResultException e) {
             LOGGER.warn("No user found for username {}", name, e);
             throw new PfeAqsException("No user found for username " + name);
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while logging the user {}", name, e);
+            throw new PfeAqsException("N\"An error occured while logging the user " + name);
         }
 
         return authenticateUser;
@@ -108,6 +120,9 @@ public class PfeAqsController implements PfeAqsService {
         } catch (NoResultException e) {
             LOGGER.warn("No form found for name {}", formName, e);
             throw new PfeAqsException("No form found for name " + formName);
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while getting form {}", formName, e);
+            throw new PfeAqsException("An error occured while getting form " + formName);
         }
 
         return form;
@@ -139,6 +154,9 @@ public class PfeAqsController implements PfeAqsService {
         } catch (NoResultException e) {
             LOGGER.warn("No form found", e);
             throw new PfeAqsException("No form found");
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while getting forms", e);
+            throw new PfeAqsException("An error occured while getting forms");
         }
 
         return forms;
@@ -165,6 +183,9 @@ public class PfeAqsController implements PfeAqsService {
         } catch (NoResultException e) {
             LOGGER.warn("An error occurred while approving the form {}, it no exists", id, e);
             throw new PfeAqsException("No form found for id " + id);
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while approving form {}", id, e);
+            throw new PfeAqsException("An error occured while approving form " + id);
         }
 
         return form;
@@ -191,6 +212,9 @@ public class PfeAqsController implements PfeAqsService {
         } catch (NoResultException e) {
             LOGGER.warn("An error occurred while rejecting the form {}, it no exists", id, e);
             throw new PfeAqsException("No form found for id " + id);
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while rejecting form {}", id, e);
+            throw new PfeAqsException("An error occured while rejecting form " + id);
         }
 
         return form;
@@ -223,23 +247,28 @@ public class PfeAqsController implements PfeAqsService {
     }
 
     private Formulaire getFormFromJson(final JSONObject jsonData) throws PfeAqsException {
-        Integer id = null;
-        if (jsonData.has("id")) {
-            id = jsonData.getInt("id");
-        }
+        try {
+            Integer id = null;
+            if (jsonData.has("id")) {
+                id = jsonData.getInt("id");
+            }
 
-        String nom = jsonData.getString("nom");
-        int version = jsonData.getInt("version");
-        String contenu = jsonData.getString("contenu");
-        Date dateCreation = Calendar.getInstance().getTime();
-        int idTemplate = jsonData.getInt("idTemplate");
-        Long idCreateur = authenticateUser.getId();
-        int approbation = enterpriseDao.getApprobationLevel(authenticateUser.getEntreprise());
+            String nom = jsonData.getString("nom");
+            int version = jsonData.getInt("version");
+            String contenu = jsonData.getString("contenu");
+            Date dateCreation = Calendar.getInstance().getTime();
+            int idTemplate = jsonData.getInt("idTemplate");
+            Long idCreateur = authenticateUser.getId();
+            int approbation = enterpriseDao.getApprobationLevel(authenticateUser.getEntreprise());
 
-        if (id == null) {
-            return new Formulaire(nom, version, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
-        } else {
-            return new Formulaire(idCreateur.intValue(), nom, 0, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+            if (id == null) {
+                return new Formulaire(nom, version, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+            } else {
+                return new Formulaire(idCreateur.intValue(), nom, 0, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occured while creating form from json", e);
+            throw new PfeAqsException("An error occured while creating form from json");
         }
     }
 

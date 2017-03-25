@@ -35,7 +35,7 @@ public class EntrepriseTest {
     public static void tearDownClass() {
                 EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM ENTREPRISE").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.ENTREPRISE").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();

@@ -4,7 +4,6 @@ import ets.pfe.aqs.dao.LoginDaoImpl;
 import ets.pfe.aqs.dao.UtilisateurDaoImpl;
 import ets.pfe.aqs.dao.service.LoginDaoService;
 import ets.pfe.aqs.dao.service.UtilisateurDaoService;
-import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.Role;
 import ets.pfe.aqs.modele.Utilisateur;
 import ets.pfe.aqs.util.JPAUtility;
@@ -40,7 +39,7 @@ public class LoginDaoTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM UTILISATEUR").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.UTILISATEUR").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();
@@ -87,7 +86,7 @@ public class LoginDaoTest {
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
             return;
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -116,7 +115,7 @@ public class LoginDaoTest {
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
             return;
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(LoginDaoTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

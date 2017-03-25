@@ -25,7 +25,7 @@ public class DocumentDaoImpl implements DocumentDaoService {
     private static final String GET_FORM_QUERY_WITH_APPROVEFORM = "From Formulaire where nom = :nom And approbation <= 0";
 
     @Override
-    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException {
+    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException, Exception {
         LOGGER.info("Get all forms");
         EntityManager entityManager = JPAUtility.openEntityManager();
         TypedQuery<Formulaire> query;
@@ -44,7 +44,7 @@ public class DocumentDaoImpl implements DocumentDaoService {
     }
 
     @Override
-    public Formulaire getForm(String formName, boolean includeNotApproveForm) throws PfeAqsException {
+    public Formulaire getForm(String formName, boolean includeNotApproveForm) throws PfeAqsException, Exception {
         LOGGER.info("Get form {}", formName);
         EntityManager entityManager = JPAUtility.openEntityManager();
         TypedQuery<Formulaire> query;
@@ -66,7 +66,7 @@ public class DocumentDaoImpl implements DocumentDaoService {
     }
 
     @Override
-    public Formulaire approveForm(long id) throws PfeAqsException {
+    public Formulaire approveForm(long id) throws PfeAqsException, Exception {
         LOGGER.info("Approving Form with id: {}", id);
         EntityManager entityManager = JPAUtility.openEntityManager();
         Formulaire form = entityManager.find(Formulaire.class, id);
@@ -90,7 +90,7 @@ public class DocumentDaoImpl implements DocumentDaoService {
     }
 
     @Override
-    public Formulaire rejectForm(long id) throws PfeAqsException {
+    public Formulaire rejectForm(long id) throws PfeAqsException, Exception {
         LOGGER.info("Rejecting Form with id: {}", id);
         EntityManager entityManager = JPAUtility.openEntityManager();
         Formulaire form = entityManager.find(Formulaire.class, id);
@@ -114,7 +114,7 @@ public class DocumentDaoImpl implements DocumentDaoService {
     }
 
     @Override
-    public Formulaire createForm(Formulaire form) throws PfeAqsException {
+    public Formulaire createForm(Formulaire form) throws PfeAqsException, Exception {
         LOGGER.info("Creating form with name: {}", form.getNom());
         EntityManager entityManager = JPAUtility.openEntityManager();
         entityManager.getTransaction().begin();

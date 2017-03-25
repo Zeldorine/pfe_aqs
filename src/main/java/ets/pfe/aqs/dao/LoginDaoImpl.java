@@ -12,7 +12,7 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * 
+ *
  * @author Zeldorine
  */
 public class LoginDaoImpl implements LoginDaoService {
@@ -20,23 +20,33 @@ public class LoginDaoImpl implements LoginDaoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginDaoImpl.class);
     private static final String CONNEXION_QUERY = "SELECT id FROM Utilisateur WHERE nom_utilisateur = '{username}' AND mot_de_passe = '{pass}'";
 
-    public Utilisateur connexion(String username, String password) throws PfeAqsException {
+    public Utilisateur connexion(String username, String password) throws PfeAqsException, Exception {
         LOGGER.info("Ask for login for username : {}", username);
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        
-        String queryStr = StringUtils.replace(CONNEXION_QUERY, "{username}", username);
-        queryStr = StringUtils.replace(queryStr, "{pass}", password);
-        
-        Query query = entityManager.createNativeQuery(queryStr);
-        Integer result = (Integer)query.getSingleResult();
+        EntityManager entityManager = null;
         Utilisateur utilisateur = null;
-        
-        if(result != null){
-            Long id = result.longValue();
-            utilisateur = entityManager.find(Utilisateur.class, id);
-            LOGGER.info("User found : " + utilisateur.getNomUtilisateur());
+
+        try {
+            entityManager = JPAUtility.openEntityManager();
+
+            String queryStr = StringUtils.replace(CONNEXION_QUERY, "{username}", username);
+            queryStr = StringUtils.replace(queryStr, "{pass}", password);
+
+            Query query = entityManager.createNativeQuery(queryStr);
+            Integer result = (Integer) query.getSingleResult();
+
+            if (result != null) {
+                Long id = result.longValue();
+                utilisateur = entityManager.find(Utilisateur.class, id);
+                LOGGER.info("User found : " + utilisateur.getNomUtilisateur());
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while logging the user {}", username, e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
         }
-    
+
         return utilisateur;
     }
 }

@@ -22,103 +22,153 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
     private static final String GET_ALL_USERS_QUERY = "FROM Utilisateur where id_entreprise = :id_entreprise";
 
     @Override
-    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException {
-        LOGGER.info("Creating user with name: {}", utilisateur.getNom());
+    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException, Exception {
+        EntityManager entityManager = null;
+        try {
+            LOGGER.info("Creating user with name: {}", utilisateur.getNom());
 
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(utilisateur);
-        entityManager.getTransaction().commit();
-
-        JPAUtility.closeEntityManager(entityManager);
-
-        LOGGER.info("User with name: " + utilisateur.getNom() + " created");
-        return utilisateur;
-    }
-
-    @Override
-    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException {
-        LOGGER.info("Activate user with id: {}", id);
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
-
-        if (utilisateur != null) {
+            entityManager = JPAUtility.openEntityManager();
             entityManager.getTransaction().begin();
-            utilisateur.setActif(activate);
+            entityManager.persist(utilisateur);
             entityManager.getTransaction().commit();
-        } else {
-            throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+
+            JPAUtility.closeEntityManager(entityManager);
+
+            LOGGER.info("User with name: " + utilisateur.getNom() + " created");
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while creating the user", e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
         }
 
-        JPAUtility.closeEntityManager(entityManager);
-        LOGGER.info("User with id: {} is actif: {}", id, activate);
+        return utilisateur;
+    }
+
+    @Override
+    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException, Exception {
+        LOGGER.info("Activate user with id: {}", id);
+        EntityManager entityManager = null;
+        Utilisateur utilisateur = null;
+
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            utilisateur = entityManager.find(Utilisateur.class, id);
+
+            if (utilisateur != null) {
+                entityManager.getTransaction().begin();
+                utilisateur.setActif(activate);
+                entityManager.getTransaction().commit();
+            } else {
+                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+            }
+
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("User with id: {} is actif: {}", id, activate);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while activating the user " + id, e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
+        }
 
         return utilisateur;
     }
 
     @Override
-    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException {
+    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException, Exception {
         long id = newUser.getId();
         LOGGER.info("Changind user's password with id: {}", id);
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
+        EntityManager entityManager = null;
+        Utilisateur utilisateur = null;
 
-        if (utilisateur != null) {
-            entityManager.getTransaction().begin();
-            utilisateur.setCourriel(newUser.getCourriel());
-            utilisateur.setRole(newUser.getRole());
-            utilisateur.setActif(newUser.isActif());
-            entityManager.getTransaction().commit();
-        } else {
-            throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            utilisateur = entityManager.find(Utilisateur.class, id);
+
+            if (utilisateur != null) {
+                entityManager.getTransaction().begin();
+                utilisateur.setCourriel(newUser.getCourriel());
+                utilisateur.setRole(newUser.getRole());
+                utilisateur.setActif(newUser.isActif());
+                entityManager.getTransaction().commit();
+            } else {
+                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+            }
+
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("Update user id: {}", id);
+
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while updating the user " + id, e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
         }
-
-        JPAUtility.closeEntityManager(entityManager);
-        LOGGER.info("Update user id: {}", id);
 
         return utilisateur;
     }
 
     @Override
-    public Utilisateur changePassword(Long id, String newPassword) throws PfeAqsException {
+    public Utilisateur changePassword(Long id, String newPassword) throws PfeAqsException, Exception {
         LOGGER.info("Changind user's password with id: {}", id);
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        Utilisateur utilisateur = entityManager.find(Utilisateur.class, id);
+        EntityManager entityManager = null;
+        Utilisateur utilisateur = null;
 
-        if (utilisateur != null) {
-            entityManager.getTransaction().begin();
-            Query query = entityManager.createQuery(CHANGE_PASS_QUERY);
-            query.setParameter("pass", newPassword);
-            query.setParameter("id", id);
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            utilisateur = entityManager.find(Utilisateur.class, id);
 
-            int result = query.executeUpdate();
-            if (result != 1) {
-                LOGGER.info("Rollback because more than one user is modified. Total user changed : {}", result);
-                entityManager.getTransaction().rollback();
+            if (utilisateur != null) {
+                entityManager.getTransaction().begin();
+                Query query = entityManager.createQuery(CHANGE_PASS_QUERY);
+                query.setParameter("pass", newPassword);
+                query.setParameter("id", id);
+
+                int result = query.executeUpdate();
+                if (result != 1) {
+                    LOGGER.info("Rollback because more than one user is modified. Total user changed : {}", result);
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.getTransaction().commit();
+
+            } else {
+                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
             }
-            entityManager.getTransaction().commit();
 
-        } else {
-            throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("Password change for user id: {}", id);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while chqnging password for the user " + id, e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
         }
-
-        JPAUtility.closeEntityManager(entityManager);
-        LOGGER.info("Password change for user id: {}", id);
-
         return utilisateur;
     }
 
-    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException {
+    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException, Exception {
         LOGGER.info("Get all users for id enterprise {}", id);
+        EntityManager entityManager = null;
+        List<Utilisateur> users = null;
 
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        TypedQuery<Utilisateur> query = entityManager.createQuery(GET_ALL_USERS_QUERY, Utilisateur.class);
-        query.setParameter("id_entreprise", id);
-        List<Utilisateur> users = query.getResultList();
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            TypedQuery<Utilisateur> query = entityManager.createQuery(GET_ALL_USERS_QUERY, Utilisateur.class);
+            query.setParameter("id_entreprise", id);
+            users = query.getResultList();
 
-        JPAUtility.closeEntityManager(entityManager);
+            JPAUtility.closeEntityManager(entityManager);
 
-        LOGGER.info("{} users are found ", users.size());
+            LOGGER.info("{} users are found ", users.size());
+
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while getting list of users for the enterprise " + id, e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
+        }
+
         return users;
     }
 }

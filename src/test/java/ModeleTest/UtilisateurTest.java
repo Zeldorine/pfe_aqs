@@ -42,7 +42,7 @@ public class UtilisateurTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM UTILISATEUR").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.UTILISATEUR").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();

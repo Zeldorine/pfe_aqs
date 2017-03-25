@@ -33,7 +33,7 @@ public class AuditDaoTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM AUDIT").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.AUDIT").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();
@@ -66,7 +66,7 @@ public class AuditDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(auditToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }

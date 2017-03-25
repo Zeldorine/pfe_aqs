@@ -55,7 +55,7 @@ public class DocumentDaoTest {
     public static void tearDownClass() {
         EntityManager em = JPAUtility.openEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM FORMULAIRE").executeUpdate();
+        em.createNativeQuery("DELETE FROM test.FORMULAIRE").executeUpdate();
         em.getTransaction().commit();
         JPAUtility.closeEntityManager(em);
         JPAUtility.close();
@@ -94,7 +94,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -125,7 +125,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             if (ex.getMessage().contains("always approve")) {
                 entityManager.getTransaction().begin();
                 entityManager.remove(entityManager.find(Formulaire.class, formIdToRemove));
@@ -160,7 +160,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -191,7 +191,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             if (ex.getMessage().contains("always approve")) {
                 entityManager.getTransaction().begin();
                 entityManager.remove(entityManager.find(Formulaire.class, formIdToRemove));
@@ -227,7 +227,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             if (ex.getMessage().contains("always approve")) {
                 return;
             }
@@ -273,7 +273,7 @@ public class DocumentDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(formulaireToCheck);
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             if (ex.getMessage().contains("always approve")) {
                 return;
             }
@@ -327,7 +327,7 @@ public class DocumentDaoTest {
             entityManager.remove(entityManager.find(Formulaire.class, formulaire_c.getId()));
             entityManager.remove(entityManager.find(Formulaire.class, formulaire_d.getId()));
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }
@@ -368,7 +368,7 @@ public class DocumentDaoTest {
             entityManager.remove(entityManager.find(Formulaire.class, formulaire_c.getId()));
             entityManager.remove(entityManager.find(Formulaire.class, formulaire_d.getId()));
             entityManager.getTransaction().commit();
-        } catch (PfeAqsException ex) {
+        } catch (Exception ex) {
             fail();
         }
     }

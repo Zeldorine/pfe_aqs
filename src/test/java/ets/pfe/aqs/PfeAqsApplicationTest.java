@@ -1,3 +1,5 @@
+package ets.pfe.aqs;
+
 
 import ets.pfe.aqs.PfeAqsApplication;
 import java.util.concurrent.Executors;

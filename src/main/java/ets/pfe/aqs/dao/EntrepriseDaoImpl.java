@@ -20,67 +20,106 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
     private static final String GET_ALL_ENTERPRISES_QUERY = "From Entreprise";
 
     @Override
-    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException {
+    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException, Exception {
         LOGGER.info("Creating enterprise with name: " + entreprise.getNom());
+        EntityManager entityManager = null;
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            entityManager.getTransaction().begin();
+            entityManager.persist(entreprise);
+            entityManager.getTransaction().commit();
 
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(entreprise);
-        entityManager.getTransaction().commit();
+            JPAUtility.closeEntityManager(entityManager);
 
-        JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("Enterprise with name: " + entreprise.getNom() + " created");
 
-        LOGGER.info("Enterprise with name: " + entreprise.getNom() + " created");
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while creating the enterprise {}", entreprise.getNom(), e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
+        }
+
         return entreprise;
     }
 
     @Override
-    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException {
+    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException, Exception {
         LOGGER.info("update enterprise with id: " + newEnterprise.getNom());
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        Entreprise oldEnterprise = entityManager.find(Entreprise.class, newEnterprise.getId());
+        EntityManager entityManager = null;
+        Entreprise oldEnterprise = null;
 
-        if (oldEnterprise != null) {
-            entityManager.getTransaction().begin();
-            oldEnterprise.setApprobationType(newEnterprise.getApprobationType());
-            oldEnterprise.setMission(newEnterprise.getMission());
-            entityManager.getTransaction().commit();
-        } else {
-            throw new PfeAqsException("The entreprise " + newEnterprise.getNom() + " dosen't exists in database.");
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            oldEnterprise = entityManager.find(Entreprise.class, newEnterprise.getId());
+
+            if (oldEnterprise != null) {
+                entityManager.getTransaction().begin();
+                oldEnterprise.setApprobationType(newEnterprise.getApprobationType());
+                oldEnterprise.setMission(newEnterprise.getMission());
+                entityManager.getTransaction().commit();
+            } else {
+                throw new PfeAqsException("The entreprise " + newEnterprise.getNom() + " dosen't exists in database.");
+            }
+
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("Enterprise: " + oldEnterprise.getNom() + " updated");
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while updating the enterprise {}", newEnterprise.getNom(), e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
         }
-
-        JPAUtility.closeEntityManager(entityManager);
-        LOGGER.info("Enterprise: " + oldEnterprise.getNom() + " updated");
 
         return oldEnterprise;
     }
 
     @Override
-    public Integer getApprobationLevel(Long id)throws PfeAqsException {
+    public Integer getApprobationLevel(Long id) throws PfeAqsException, Exception {
         LOGGER.info("Get approbation level for enterprise with id: " + id);
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        Entreprise enterprise = entityManager.find(Entreprise.class, id);
+        EntityManager entityManager = null;
+        Entreprise enterprise = null;
 
-        if (enterprise != null) {
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            enterprise = entityManager.find(Entreprise.class, id);
+
+            if (enterprise != null) {
+                JPAUtility.closeEntityManager(entityManager);
+                LOGGER.info("Approbation level for enterprise with id: {}, is ", id, enterprise.getApprobationType().getTotalApprobation());
+                return enterprise.getApprobationType().getTotalApprobation();
+            } else {
+                throw new PfeAqsException("The entreprise " + enterprise.getNom() + " dosen't exists in database.");
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while getting approbation level for the enterprise {}", id, e);
+            throw e;
+        } finally {
             JPAUtility.closeEntityManager(entityManager);
-            LOGGER.info("Approbation level for enterprise with id: {}, is ", id, enterprise.getApprobationType().getTotalApprobation());
-            return enterprise.getApprobationType().getTotalApprobation();
-        } else {
-            throw new PfeAqsException("The entreprise " + enterprise.getNom() + " dosen't exists in database.");
         }
     }
-    
+
     @Override
-    public List<Entreprise> getEnterprises() throws PfeAqsException {
+    public List<Entreprise> getEnterprises() throws PfeAqsException, Exception {
         LOGGER.info("Get all enterprises");
+        EntityManager entityManager = null;
+        List<Entreprise> enterprises = null;
 
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        TypedQuery<Entreprise> query = entityManager.createQuery(GET_ALL_ENTERPRISES_QUERY, Entreprise.class);
-        List<Entreprise> enterprises = query.getResultList();
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            TypedQuery<Entreprise> query = entityManager.createQuery(GET_ALL_ENTERPRISES_QUERY, Entreprise.class);
+            enterprises = query.getResultList();
 
-        JPAUtility.closeEntityManager(entityManager);
+            JPAUtility.closeEntityManager(entityManager);
+            LOGGER.info("{} enterprises are found " + enterprises.size());
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while getting enterprises", e);
+            throw e;
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
+        }
 
-        LOGGER.info("{} enterprises are found " + enterprises.size());
         return enterprises;
     }
 

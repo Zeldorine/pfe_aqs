@@ -1,10 +1,13 @@
 package ets.pfe.aqs.dao;
 
+import ets.pfe.aqs.PfeAqsController;
 import ets.pfe.aqs.dao.service.AuditDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.Audit;
 import ets.pfe.aqs.util.JPAUtility;
 import javax.persistence.EntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,14 +15,22 @@ import javax.persistence.EntityManager;
  */
 public class AuditDaoImpl implements AuditDaoService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditDaoImpl.class);
+
     public Audit creerAudit(Audit audit) throws PfeAqsException {
-        EntityManager entityManager = JPAUtility.openEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(audit);
-        entityManager.getTransaction().commit();
-        JPAUtility.closeEntityManager(entityManager);
+        EntityManager entityManager = null;
+        try {
+            entityManager = JPAUtility.openEntityManager();
+            entityManager.getTransaction().begin();
+            entityManager.persist(audit);
+            entityManager.getTransaction().commit();
+            JPAUtility.closeEntityManager(entityManager);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while creating an audit", e);
+        } finally {
+            JPAUtility.closeEntityManager(entityManager);
+        }
         
         return audit;
     }
-
 }
