@@ -65,3 +65,22 @@ UPDATE ENTERPRISE
 "id":"1",
 "mission":"mission",
 "approbationType":"ONE_APPROBATION"}}
+
+
+----------------------------------------------
+ADD FORM
+{"form":
+
+{"nom":"form A",
+"version":"1",
+"contenu":"{"nom":"nom","mission":"mission","approbationType":"ONE_APPROBATION"}",
+"idTemplate":"1"}}
+
+
+
+
+
+{"nom":"form A",
+"version":"1",
+"contenu":{"nom":"nom","mission":"mission","approbationType":"ONE_APPROBATION"},
+"idTemplate":"1"}

@@ -103,7 +103,7 @@ public class PfeAqsController implements PfeAqsService {
         LOGGER.info("[Controller]Login with username {}", formName);
         Formulaire form = null;
 
-        if (authenticateUserIsEditorOrApprover()) {
+        if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to get form, it is a {}", authenticateUser.getRole());
             throw new PfeAqsException("Authenticated user has not appropriate role to get form, it is a " + authenticateUser.getRole());
         }
@@ -129,7 +129,7 @@ public class PfeAqsController implements PfeAqsService {
     }
 
     private boolean authenticateUserIsEditorOrApprover() {
-        return authenticateUser.getRole() != Role.EDITEUR || authenticateUser.getRole() != Role.APPROBATEUR;
+        return authenticateUser.getRole() == Role.EDITEUR || authenticateUser.getRole() == Role.APPROBATEUR;
     }
 
     @Override
@@ -137,7 +137,7 @@ public class PfeAqsController implements PfeAqsService {
         LOGGER.info("[Controller] Get all form");
         List<Formulaire> forms = null;
 
-        if (authenticateUserIsEditorOrApprover()) {
+        if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to get forms, it is a {}", authenticateUser.getRole());
             throw new PfeAqsException("Authenticated user has not appropriate role to get forms, it is a " + authenticateUser.getRole());
         }
@@ -225,7 +225,7 @@ public class PfeAqsController implements PfeAqsService {
         LOGGER.info("[Controller] Create form/revision");
         Formulaire form = null;
 
-        if (authenticateUserIsEditorOrApprover()) {
+        if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to create form, it is a {}", authenticateUser.getRole());
             throw new PfeAqsException("Authenticated user has not appropriate role to create form, it is a " + authenticateUser.getRole());
         }
@@ -255,7 +255,7 @@ public class PfeAqsController implements PfeAqsService {
 
             String nom = jsonData.getString("nom");
             int version = jsonData.getInt("version");
-            String contenu = jsonData.getString("contenu");
+            String contenu = jsonData.getJSONObject("contenu").toString();
             Date dateCreation = Calendar.getInstance().getTime();
             int idTemplate = jsonData.getInt("idTemplate");
             Long idCreateur = authenticateUser.getId();
