@@ -1,0 +1,67 @@
+
+----------------------------------------------
+LOGIN
+{"username":"Zeldorine",
+"pass":"123soleil"}
+
+----------------------------------------------
+LOGOUT
+{}
+
+
+----------------------------------------------
+ADD USER
+{"user":
+
+{"nomUtilisateur":"Zeldorine",
+"nom":"Cazorla",
+"prenom":"Tony",
+"courriel":"tc@mail.ca",
+"role":"APPROBATEUR",
+"actif":"1",
+"entreprise":"1"}}
+
+
+----------------------------------------------
+ACTIVATE USER
+{"user":
+
+{"id":"1",
+"nom":"Cazorla",
+"id":"2",
+"prenom":"Tony",
+"courriel":"tc@mail.ca",
+"role":"APPROBATEUR",
+"actif":"1",
+"pass":"123soleil",
+"entreprise":"1"}}
+
+----------------------------------------------
+DEACTIVATE USER
+{"user":
+
+{"id":"1",
+"nom":"Cazorla",
+"prenom":"Tony",
+"courriel":"tc@mail.ca",
+"role":"APPROBATEUR",
+"actif":"0",
+"pass":"123soleil",
+"entreprise":"1"}}
+
+----------------------------------------------
+ADD ENTERPRISE
+{"enterprise":
+
+{"nom":"nom",
+"mission":"mission",
+"approbationType":"ONE_APPROBATION"}}
+
+----------------------------------------------
+UPDATE ENTERPRISE
+{"enterprise":
+
+{"nom":"nom",
+"id":"1",
+"mission":"mission",
+"approbationType":"ONE_APPROBATION"}}
