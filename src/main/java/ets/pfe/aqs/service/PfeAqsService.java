@@ -30,10 +30,14 @@ public interface PfeAqsService {
     public Entreprise addEnterprise(JSONObject jsonData) throws PfeAqsException;
 
     public Entreprise updateEnterprise(JSONObject jsonData) throws PfeAqsException;
+    
+    public List<Entreprise> getEnterprises() throws PfeAqsException;
 
     public Utilisateur addUser(JSONObject jsonData) throws PfeAqsException;
 
     public Utilisateur updateUser(JSONObject jsonData) throws PfeAqsException;
 
     public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException;
+    
+    public List<Utilisateur> getUtilisateurByEnterpriseId(Long id) throws PfeAqsException;
 }

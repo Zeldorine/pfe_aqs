@@ -297,6 +297,55 @@ public class PfeAqsControllerTest {
     }
 
     @Test
+    public void getUsersWrongTest() {
+        setAuthenticateUser(Role.ADMIN_SYSTEM);
+
+        try {
+            JSONObject jsonData = new JSONObject("{\"nomUtilisateur\":\"Zeldorine\","
+                    + "\"nom\":\"Cazorla\","
+                    + "\"prenom\":\"Tony\","
+                    + "\"courriel\":\"tc@mail.ca\","
+                    + "\"role\":\"APPROBATEUR\","
+                    + "\"actif\":\"1\","
+                    + "\"entreprise\":\"1\"}");
+
+            controller.addUser(jsonData);
+            List<Utilisateur> users = controller.getUtilisateurByEnterpriseId(1l);
+
+            Assert.assertNotNull(users);
+            Assert.assertEquals(1, users.size());
+        } catch (PfeAqsException ex) {
+        } finally {
+            cleanDB(false);
+        }
+    }
+
+    @Test
+    public void getUsersGoodTest() {
+        setAuthenticateUser(Role.ADMIN_ENTREPRISE);
+
+        try {
+            JSONObject jsonData = new JSONObject("{\"nomUtilisateur\":\"Zeldorine\","
+                    + "\"nom\":\"Cazorla\","
+                    + "\"prenom\":\"Tony\","
+                    + "\"courriel\":\"tc@mail.ca\","
+                    + "\"role\":\"APPROBATEUR\","
+                    + "\"actif\":\"1\","
+                    + "\"entreprise\":\"1\"}");
+
+            controller.addUser(jsonData);
+            List<Utilisateur> users = controller.getUtilisateurByEnterpriseId(1l);
+
+            Assert.assertNotNull(users);
+            Assert.assertEquals(1, users.size());
+        } catch (PfeAqsException ex) {
+            fail();
+        } finally {
+            cleanDB(false);
+        }
+    }
+
+    @Test
     public void addEnterpriseWrongTest() {
         setAuthenticateUser(Role.ADMIN_ENTREPRISE);
 
@@ -388,6 +437,47 @@ public class PfeAqsControllerTest {
             Assert.assertEquals("nom", enterprise.getNom());
             Assert.assertEquals("Mission super", enterprise.getMission());
             Assert.assertEquals(ApprobationType.TWO_APPROBATION, enterprise.getApprobationType());
+        } catch (PfeAqsException ex) {
+            fail();
+        } finally {
+            cleanDB(false);
+        }
+    }
+
+    @Test
+    public void getEnterprisesWrongTest() {
+        setAuthenticateUser(Role.ADMIN_ENTREPRISE);
+
+        try {
+            JSONObject jsonData = new JSONObject("{\"nom\":\"nom\","
+                    + "\"mission\":\"mission\","
+                    + "\"approbationType\":\"ONE_APPROBATION\"}");
+
+            controller.addEnterprise(jsonData);
+            List<Entreprise> enterprise = controller.getEnterprises();
+
+            Assert.assertNotNull(enterprise);
+            Assert.assertEquals(1, enterprise.size());
+        } catch (PfeAqsException ex) {
+        } finally {
+            cleanDB(false);
+        }
+    }
+
+    @Test
+    public void getEnterprisesGoodTest() {
+        setAuthenticateUser(Role.ADMIN_SYSTEM);
+
+        try {
+            JSONObject jsonData = new JSONObject("{\"nom\":\"nom\","
+                    + "\"mission\":\"mission\","
+                    + "\"approbationType\":\"ONE_APPROBATION\"}");
+
+            controller.addEnterprise(jsonData);
+            List<Entreprise> enterprise = controller.getEnterprises();
+
+            Assert.assertNotNull(enterprise);
+            Assert.assertTrue(enterprise.size() > 0);
         } catch (PfeAqsException ex) {
             fail();
         } finally {
@@ -627,8 +717,8 @@ public class PfeAqsControllerTest {
             cleanDB(false);
         }
     }
-    
-        @Test
+
+    @Test
     public void approveRejectFormFailTest() {
         setAuthenticateUser(Role.APPROBATEUR);
         Formulaire form = null;

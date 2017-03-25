@@ -64,10 +64,10 @@ public class PfeAqsController implements PfeAqsService {
         userDao = new UtilisateurDaoImpl();
     }
 
-    void setAuthenticateUser(Utilisateur user){
+    void setAuthenticateUser(Utilisateur user) {
         this.authenticateUser = user;
     }
-    
+
     @Override
     public Utilisateur login(final String name, final String password) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", name);
@@ -327,6 +327,33 @@ public class PfeAqsController implements PfeAqsService {
         return enterprise;
     }
 
+    @Override
+    public List<Entreprise> getEnterprises() throws PfeAqsException {
+        LOGGER.info("[Controller] get enterprises");
+
+        Role authenticatedUserRole = authenticateUser.getRole();
+        if (authenticatedUserRole != Role.ADMIN_SYSTEM) {
+            LOGGER.error("Authenticated user has not appropriate role to get enterprises, it is a {}", authenticateUser.getRole());
+            throw new PfeAqsException("Authenticated user has not appropriate role to get enterprises, it is a " + authenticateUser.getRole());
+        }
+
+        List<Entreprise> enterprises = null;
+        try {
+            enterprises = enterpriseDao.getEnterprises();
+
+            if (enterprises != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_ENTERPRISES, Calendar.getInstance().getTime(), ""));
+            } else {
+                throw new PfeAqsException("An error occurred during getting enterprises");
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occurred during getting enterprises", e);
+            throw new PfeAqsException("An error occurred during getting enterprises");
+        }
+
+        return enterprises;
+    }
+
     private Entreprise getEnterpriseFromJson(final JSONObject jsonData) {
         Integer id = null;
         if (jsonData.has("id")) {
@@ -427,8 +454,8 @@ public class PfeAqsController implements PfeAqsService {
     public Utilisateur activateUtilisateur(final Long id, final boolean activate) throws PfeAqsException {
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
-            LOGGER.error("Authenticated user has not appropriate role to activate/deactivate a user, it is a {}", authenticateUser.getRole());
-            throw new PfeAqsException("Authenticated user has not appropriate role to activate/deactivate a user, it is a " + authenticateUser.getRole());
+            LOGGER.error("Authenticated user has not appropriate role to activate/deactivate a user, it is a {}", authenticatedUserRole);
+            throw new PfeAqsException("Authenticated user has not appropriate role to activate/deactivate a user, it is a " + authenticatedUserRole);
         }
 
         String logInfo = activate ? "activating" : "deactivating";
@@ -450,5 +477,32 @@ public class PfeAqsController implements PfeAqsService {
         }
 
         return user;
+    }
+
+    @Override
+    public List<Utilisateur> getUtilisateurByEnterpriseId(Long id) throws PfeAqsException {
+        LOGGER.info("[Controller] get users for the enterprises id {}", id);
+
+        Role authenticatedUserRole = authenticateUser.getRole();
+        if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
+            LOGGER.error("Authenticated user has not appropriate role to get users, it is a {}", authenticatedUserRole);
+            throw new PfeAqsException("Authenticated user has not appropriate role to get users, it is a " + authenticatedUserRole);
+        }
+
+        List<Utilisateur> users = null;
+        try {
+            users = userDao.getUsersByEnterprise(id);
+
+            if (users != null) {
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_USERS, Calendar.getInstance().getTime(), ""+id));
+            } else {
+                throw new PfeAqsException("An error occurred during getting users for the enterprise id " + id);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("An error occurred during getting users for the enterprise id {}", id, e);
+            throw new PfeAqsException("An error occurred during getting users for the enterprise id " + id);
+        }
+
+        return users;
     }
 }

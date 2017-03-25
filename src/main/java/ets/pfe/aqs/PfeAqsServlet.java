@@ -7,6 +7,7 @@ import ets.pfe.aqs.modele.Utilisateur;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ets.pfe.aqs.service.PfeAqsService;
+import java.util.List;
 import javax.servlet.http.HttpServlet;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -49,7 +50,7 @@ public class PfeAqsServlet extends HttpServlet {
     @POST
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@FormParam("login") String json) {
+    public Response login(@FormParam("login") String json) throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] Login with parameters: {}", json);
         JSONObject data = new JSONObject(json);
         String username = data.getString(USERNAME);
@@ -69,7 +70,7 @@ public class PfeAqsServlet extends HttpServlet {
     @GET
     @Path("logout")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response logout() {
+    public Response logout() throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] logout");
 
         try {
@@ -80,6 +81,26 @@ public class PfeAqsServlet extends HttpServlet {
         }
 
         return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).build();
+    }
+
+    @POST
+    @Path("getForm")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getForm(@FormParam("form") String json) throws PfeAqsException {
+        JSONObject data = new JSONObject(json);
+        String formName = data.getString(NAME);
+        LOGGER.info("[Servlet][Rest-service] Get form {}", formName);
+
+        try {
+            JSONObject form = new JSONObject(pfeAqs.getForm(formName));
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(form.toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("No form found", e);
+            return Response.status(Status.NOT_FOUND).entity("No Form found").build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during get form", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during get form.").build();
+        }
     }
 
     @GET
@@ -103,7 +124,7 @@ public class PfeAqsServlet extends HttpServlet {
     @POST
     @Path("approveForm")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response approveForm(@FormParam("id") String json) throws PfeAqsException {
+    public Response approveForm(@FormParam("form") String json) throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] Approve form");
         JSONObject data = new JSONObject(json);
         Long id = data.getLong(ID);
@@ -123,7 +144,7 @@ public class PfeAqsServlet extends HttpServlet {
     @POST
     @Path("rejectForm")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response rejectForm(@FormParam("id") String json) throws PfeAqsException {
+    public Response rejectForm(@FormParam("form") String json) throws PfeAqsException {
         LOGGER.info("[Servlet][Rest-service] Reject form");
         JSONObject data = new JSONObject(json);
         Long id = data.getLong(ID);
@@ -203,6 +224,25 @@ public class PfeAqsServlet extends HttpServlet {
         }
     }
 
+    @GET
+    @Path("getEnterprises")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEnterprises() throws PfeAqsException {
+        LOGGER.info("[Servlet][Rest-service] get enterprises ");
+        List<Entreprise> enterprises = null;
+
+        try {
+            enterprises = pfeAqs.getEnterprises();
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(enterprises).toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("Cannot get enterprises", e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot get enterprises").build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during getting enterprises", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during getting enterprises.").build();
+        }
+    }
+
     @POST
     @Path("addUser")
     @Produces(MediaType.APPLICATION_JSON)
@@ -264,6 +304,26 @@ public class PfeAqsServlet extends HttpServlet {
         } catch (Exception e) {
             LOGGER.error("An error occured during Activate/Deactivate a user with name :  " + id, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during Activate/Deactivate a user name : " + id + ".").build();
+        }
+    }
+
+    @POST
+    @Path("getUsers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUsersByEnterpriseId(@FormParam("user") String jsonData) throws PfeAqsException {
+        LOGGER.info("[Servlet][Rest-service] Update user with parameters: {}", jsonData);
+        Long id = (new JSONObject(jsonData)).getLong(ID);
+        List<Utilisateur> users = null;
+
+        try {
+            users = pfeAqs.getUtilisateurByEnterpriseId(id);
+            return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(new JSONObject(users).toString()).build();
+        } catch (PfeAqsException e) {
+            LOGGER.warn("Cannot get users for the enterprise id {}", id, e);
+            return Response.status(Status.NOT_FOUND).entity("Cannot get users for the enterprise " + id).build();
+        } catch (Exception e) {
+            LOGGER.error("An error occured during getting users for the enterprise {}", id, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("An error occured during getting users for the enterprise " + id).build();
         }
     }
 }

@@ -23,6 +23,8 @@ public enum AuditType {
     CREATE_REVISION(11),
     APPROVE_FORM(17),
     REJECT_FORM(18),
+    GET_ENTERPRISES(19),
+    GET_USERS(20),
     UPDATE_USER(15),
     UPDATE_ENTERPRISE(16);
     
