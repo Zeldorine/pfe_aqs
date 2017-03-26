@@ -17,6 +17,11 @@ public abstract class SecurityUtil {
 
     private SecurityUtil(){}
     
+    /**
+     * 
+     * @param pass
+     * @return 
+     */
     public static String cryptWithMD5(String pass) {
         try {
             MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);

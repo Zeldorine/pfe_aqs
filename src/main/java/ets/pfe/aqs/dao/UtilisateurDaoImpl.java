@@ -21,8 +21,14 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
     private static final String CHANGE_PASS_QUERY = "UPDATE Utilisateur set mot_de_passe = :pass where id = :id";
     private static final String GET_ALL_USERS_QUERY = "FROM Utilisateur where id_entreprise = :id_entreprise";
 
+    /**
+     * 
+     * @param utilisateur
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException, Exception {
+    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException {
         EntityManager entityManager = null;
         try {
             LOGGER.info("Creating user with name: {}", utilisateur.getNom());
@@ -37,7 +43,7 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
             LOGGER.info("User with name: " + utilisateur.getNom() + " created");
         } catch (Exception e) {
             LOGGER.error("An error occurred while creating the user", e);
-            throw e;
+            throw new PfeAqsException("An error occurred while creating the user");
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
@@ -45,8 +51,15 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
         return utilisateur;
     }
 
+    /**
+     * 
+     * @param id
+     * @param activate
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException, Exception {
+    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException {
         LOGGER.info("Activate user with id: {}", id);
         EntityManager entityManager = null;
         Utilisateur utilisateur = null;
@@ -60,23 +73,38 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
                 utilisateur.setActif(activate);
                 entityManager.getTransaction().commit();
             } else {
-                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+                throw new PfeAqsException(getErrorNoResult(id));
             }
 
             JPAUtility.closeEntityManager(entityManager);
             LOGGER.info("User with id: {} is actif: {}", id, activate);
         } catch (Exception e) {
-            LOGGER.error("An error occurred while activating the user " + id, e);
-            throw e;
+            LOGGER.error("An error occurred while activating the user {}", id, e);
+            throw new PfeAqsException("An error occurred while activating the user " + id);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
 
         return utilisateur;
     }
+    
+    /**
+     * 
+     * @param userId
+     * @return 
+     */
+    private String getErrorNoResult(Long userId){
+        return "The user id " + userId + " dosen't exists in database.";
+    }
 
+    /**
+     * 
+     * @param newUser
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException, Exception {
+    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException {
         long id = newUser.getId();
         LOGGER.info("Changind user's password with id: {}", id);
         EntityManager entityManager = null;
@@ -93,15 +121,14 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
                 utilisateur.setActif(newUser.isActif());
                 entityManager.getTransaction().commit();
             } else {
-                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+                throw new PfeAqsException(getErrorNoResult(id));
             }
 
             JPAUtility.closeEntityManager(entityManager);
             LOGGER.info("Update user id: {}", id);
-
         } catch (Exception e) {
-            LOGGER.error("An error occurred while updating the user " + id, e);
-            throw e;
+            LOGGER.error("An error occurred while updating the user {}", id, e);
+            throw new PfeAqsException("An error occurred while updating the user " + id);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
@@ -109,21 +136,28 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
         return utilisateur;
     }
 
+    /**
+     * 
+     * @param userId
+     * @param newPassword
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Utilisateur changePassword(Long id, String newPassword) throws PfeAqsException, Exception {
-        LOGGER.info("Changind user's password with id: {}", id);
+    public Utilisateur changePassword(Long userId, String newPassword) throws PfeAqsException {
+        LOGGER.info("Changind user's password with id: {}", userId);
         EntityManager entityManager = null;
-        Utilisateur utilisateur = null;
+        Utilisateur user = null;
 
         try {
             entityManager = JPAUtility.openEntityManager();
-            utilisateur = entityManager.find(Utilisateur.class, id);
+            user = entityManager.find(Utilisateur.class, userId);
 
-            if (utilisateur != null) {
+            if (user != null) {
                 entityManager.getTransaction().begin();
                 Query query = entityManager.createQuery(CHANGE_PASS_QUERY);
                 query.setParameter("pass", newPassword);
-                query.setParameter("id", id);
+                query.setParameter("id", userId);
 
                 int result = query.executeUpdate();
                 if (result != 1) {
@@ -131,23 +165,28 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
                     entityManager.getTransaction().rollback();
                 }
                 entityManager.getTransaction().commit();
-
             } else {
-                throw new PfeAqsException("The user id " + id + " dosen't exists in database.");
+                throw new PfeAqsException(getErrorNoResult(userId));
             }
 
             JPAUtility.closeEntityManager(entityManager);
-            LOGGER.info("Password change for user id: {}", id);
+            LOGGER.info("Password change for user id: {}", userId);
         } catch (Exception e) {
-            LOGGER.error("An error occurred while chqnging password for the user " + id, e);
-            throw e;
+            LOGGER.error("An error occurred while changing password for the user {}", userId, e);
+            throw new PfeAqsException("An error occurred while chqnging password for the user " + userId);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
-        return utilisateur;
+        return user;
     }
 
-    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException, Exception {
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
+    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException {
         LOGGER.info("Get all users for id enterprise {}", id);
         EntityManager entityManager = null;
         List<Utilisateur> users = null;
@@ -163,8 +202,8 @@ public class UtilisateurDaoImpl implements UtilisateurDaoService {
             LOGGER.info("{} users are found ", users.size());
 
         } catch (Exception e) {
-            LOGGER.error("An error occurred while getting list of users for the enterprise " + id, e);
-            throw e;
+            LOGGER.error("An error occurred while getting list of users for the enterprise {}", id, e);
+            throw new PfeAqsException("An error occurred while getting list of users for the enterprise " + id);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }

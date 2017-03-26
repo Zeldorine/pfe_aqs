@@ -29,6 +29,9 @@ public abstract class JPAUtility {
         }
     }
 
+    /**
+     * 
+     */
     public static void open() {
         try {
             if (emf == null) {
@@ -41,11 +44,18 @@ public abstract class JPAUtility {
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static EntityManager openEntityManager() {
         LOGGER.info("Create entity manager");
         return emf.createEntityManager();
     }
 
+    /**
+     * 
+     */
     public static synchronized void close() {
         LOGGER.info("Close entity manager factory");
 
@@ -84,5 +94,4 @@ public abstract class JPAUtility {
             }
         }
     }
-
 }

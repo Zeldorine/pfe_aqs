@@ -33,10 +33,20 @@ public class Audit {
     @Column(name = "objet", updatable = false, nullable = false)
     private String objet;
 
+    /**
+     * 
+     */
     public Audit() {
         //Empty because of jpa
     }
 
+    /**
+     * 
+     * @param utilisateurId
+     * @param auditType
+     * @param date
+     * @param objet 
+     */
     public Audit(long utilisateurId, AuditType auditType, Date date, String objet) {
         this.utilisateurId = utilisateurId;
         this.auditType = auditType;
@@ -44,38 +54,74 @@ public class Audit {
         this.objet = objet;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getUtilisateurId() {
         return utilisateurId;
     }
 
+    /**
+     * 
+     * @param utilisateurId 
+     */
     public void setUtilisateurId(long utilisateurId) {
         this.utilisateurId = utilisateurId;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public AuditType getAuditType() {
         return auditType;
     }
 
+    /**
+     * 
+     * @param auditType 
+     */
     public void setAuditType(AuditType auditType) {
         this.auditType = auditType;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Date getDate() {
         return date;
     }
 
+    /**
+     * 
+     * @param date 
+     */
     public void setDate(Date date) {
         this.date = date;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getObjet() {
         return objet;
     }
 
+    /**
+     * 
+     * @param objet 
+     */
     public void setObjet(String objet) {
         this.objet = objet;
     }

@@ -20,10 +20,18 @@ public enum ApprobationType {
     
     private int totalApprobation;
     
+    /**
+     * 
+     * @param totalApprobation 
+     */
     private ApprobationType(int totalApprobation){
         this.totalApprobation = totalApprobation;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public int getTotalApprobation(){
         return totalApprobation;
     }

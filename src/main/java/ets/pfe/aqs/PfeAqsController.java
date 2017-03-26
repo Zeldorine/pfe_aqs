@@ -46,6 +46,11 @@ public class PfeAqsController implements PfeAqsService {
     private final EntrepriseDaoService enterpriseDao;
     private final UtilisateurDaoService userDao;
 
+    private static final String NO_FORM_FOUND = "No form found for id ";
+/**
+ * 
+ * @throws JAXBException 
+ */
     public PfeAqsController() throws JAXBException {
         config = PfeAqsApplication.getConfig();
         loginDao = new LoginDaoImpl();
@@ -55,6 +60,11 @@ public class PfeAqsController implements PfeAqsService {
         userDao = new UtilisateurDaoImpl();
     }
 
+    /**
+     * 
+     * @param config
+     * @throws JAXBException 
+     */
     public PfeAqsController(ConfigUtil config) throws JAXBException {
         this.config = config;
         loginDao = new LoginDaoImpl();
@@ -64,16 +74,27 @@ public class PfeAqsController implements PfeAqsService {
         userDao = new UtilisateurDaoImpl();
     }
 
-    void setAuthenticateUser(Utilisateur user) {
-        this.authenticateUser = user;
+    /**
+     * 
+     * @param user 
+     */
+    static void setAuthenticateUser(Utilisateur user) {
+        authenticateUser = user;
     }
 
+    /**
+     * 
+     * @param name
+     * @param password
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Utilisateur login(final String name, final String password) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", name);
 
         try {
-            authenticateUser = loginDao.connexion(name, SecurityUtil.cryptWithMD5(password));
+            setAuthenticateUser(loginDao.connexion(name, SecurityUtil.cryptWithMD5(password)));
 
             if (authenticateUser != null) {
                 auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CONNEXION, Calendar.getInstance().getTime(), config.getAppName()));
@@ -91,17 +112,27 @@ public class PfeAqsController implements PfeAqsService {
         return authenticateUser;
     }
 
+    /**
+     * 
+     * @throws PfeAqsException 
+     */
     @Override
     public void logout() throws PfeAqsException {
         LOGGER.info("[Controller] logout the user {}", authenticateUser.getId());
         auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.DECONNEXION, Calendar.getInstance().getTime(), config.getAppName()));
-        authenticateUser = null;
+        setAuthenticateUser(null);
     }
 
+    /**
+     * 
+     * @param formName
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Formulaire getForm(final String formName) throws PfeAqsException {
         LOGGER.info("[Controller]Login with username {}", formName);
-        Formulaire form = null;
+        Formulaire form;
 
         if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to get form, it is a {}", authenticateUser.getRole());
@@ -128,14 +159,23 @@ public class PfeAqsController implements PfeAqsService {
         return form;
     }
 
+    /**
+     * 
+     * @return 
+     */
     private boolean authenticateUserIsEditorOrApprover() {
         return authenticateUser.getRole() == Role.EDITEUR || authenticateUser.getRole() == Role.APPROBATEUR;
     }
 
+    /**
+     * 
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public List<Formulaire> getAllForm() throws PfeAqsException {
         LOGGER.info("[Controller] Get all form");
-        List<Formulaire> forms = null;
+        List<Formulaire> forms;
 
         if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to get forms, it is a {}", authenticateUser.getRole());
@@ -149,7 +189,7 @@ public class PfeAqsController implements PfeAqsService {
             if (forms != null) {
                 auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_FORMULAIRE, Calendar.getInstance().getTime(), "All forms"));
             } else {
-                throw new PfeAqsException("No form found");
+                throw new PfeAqsException("No forms found");
             }
         } catch (NoResultException e) {
             LOGGER.warn("No form found", e);
@@ -162,10 +202,16 @@ public class PfeAqsController implements PfeAqsService {
         return forms;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire approveForm(final long id) throws PfeAqsException {
+    public Formulaire approveForm(final Long id) throws PfeAqsException {
         LOGGER.info("[Controller] Approve form {}", id);
-        Formulaire form = null;
+        Formulaire form;
 
         if (authenticateUser.getRole() != Role.APPROBATEUR) {
             LOGGER.error("Authenticated user has not appropriate role to approve forms, it is a {}", authenticateUser.getRole());
@@ -176,13 +222,13 @@ public class PfeAqsController implements PfeAqsService {
             form = documentDao.approveForm(id);
 
             if (form != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.APPROVE_FORM, Calendar.getInstance().getTime(), id + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.APPROVE_FORM, Calendar.getInstance().getTime(), id.toString()));
             } else {
                 throw new PfeAqsException("An error occurred while approving the form " + id);
             }
         } catch (NoResultException e) {
             LOGGER.warn("An error occurred while approving the form {}, it no exists", id, e);
-            throw new PfeAqsException("No form found for id " + id);
+            throw new PfeAqsException(NO_FORM_FOUND + id);
         } catch (Exception e) {
             LOGGER.warn("An error occured while approving form {}", id, e);
             throw new PfeAqsException("An error occured while approving form " + id);
@@ -191,10 +237,16 @@ public class PfeAqsController implements PfeAqsService {
         return form;
     }
 
+    /**
+     * 
+     * @param formId
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire rejectForm(final long id) throws PfeAqsException {
-        LOGGER.info("[Controller] Reject form {}", id);
-        Formulaire form = null;
+    public Formulaire rejectForm(final Long formId) throws PfeAqsException {
+        LOGGER.info("[Controller] Reject form {}", formId);
+        Formulaire form;
 
         if (authenticateUser.getRole() != Role.APPROBATEUR) {
             LOGGER.error("Authenticated user has not appropriate role to reject forms, it is a {}", authenticateUser.getRole());
@@ -202,28 +254,34 @@ public class PfeAqsController implements PfeAqsService {
         }
 
         try {
-            form = documentDao.rejectForm(id);
+            form = documentDao.rejectForm(formId);
 
             if (form != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.REJECT_FORM, Calendar.getInstance().getTime(), id + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.REJECT_FORM, Calendar.getInstance().getTime(), formId.toString()));
             } else {
-                throw new PfeAqsException("An error occurred while rejecting the form " + id);
+                throw new PfeAqsException("An error occurred while rejecting the form " + formId);
             }
         } catch (NoResultException e) {
-            LOGGER.warn("An error occurred while rejecting the form {}, it no exists", id, e);
-            throw new PfeAqsException("No form found for id " + id);
+            LOGGER.warn("An error occurred while rejecting the form {}, it no exists", formId, e);
+            throw new PfeAqsException(NO_FORM_FOUND + formId);
         } catch (Exception e) {
-            LOGGER.warn("An error occured while rejecting form {}", id, e);
-            throw new PfeAqsException("An error occured while rejecting form " + id);
+            LOGGER.warn("An error occured while rejecting form {}", formId, e);
+            throw new PfeAqsException("An error occured while rejecting form " + formId);
         }
 
         return form;
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Formulaire createForm(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Create form/revision");
-        Formulaire form = null;
+        Formulaire form;
 
         if (!authenticateUserIsEditorOrApprover()) {
             LOGGER.error("Authenticated user has not appropriate role to create form, it is a {}", authenticateUser.getRole());
@@ -234,18 +292,24 @@ public class PfeAqsController implements PfeAqsService {
             form = documentDao.createForm(getFormFromJson(jsonData));
 
             if (form != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_FORMULAIRE, Calendar.getInstance().getTime(), form.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_FORMULAIRE, Calendar.getInstance().getTime(), form.getId().toString()));
             } else {
                 throw new PfeAqsException("An error occurred while creating the form/revision ");
             }
         } catch (Exception e) {
             LOGGER.warn("An error occurred while creating the form/revision", e);
-            throw new PfeAqsException("No form found for id ");
+            throw new PfeAqsException(NO_FORM_FOUND);
         }
 
         return form;
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     private Formulaire getFormFromJson(final JSONObject jsonData) throws PfeAqsException {
         try {
             Integer id = null;
@@ -261,10 +325,11 @@ public class PfeAqsController implements PfeAqsService {
             Long idCreateur = authenticateUser.getId();
             int approbation = enterpriseDao.getApprobationLevel(authenticateUser.getEntreprise());
 
-            if (id == null) {
-                return new Formulaire(nom, version, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+            Formulaire form = new Formulaire(nom, version, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+            if (id != null) {
+                return new Formulaire(id, form);
             } else {
-                return new Formulaire(idCreateur.intValue(), nom, 0, contenu, dateCreation, idTemplate, idCreateur.intValue(), approbation);
+                return form;
             }
         } catch (Exception e) {
             LOGGER.warn("An error occured while creating form from json", e);
@@ -272,9 +337,16 @@ public class PfeAqsController implements PfeAqsService {
         }
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Entreprise addEnterprise(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Add enterprise");
+        String error = "An error occurred during creating a enterprise";
 
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_SYSTEM) {
@@ -287,18 +359,24 @@ public class PfeAqsController implements PfeAqsService {
             enterprise = enterpriseDao.ajouterEntreprise(getEnterpriseFromJson(jsonData));
 
             if (enterprise != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_ENTREPRISE, Calendar.getInstance().getTime(), enterprise.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.CREATE_ENTREPRISE, Calendar.getInstance().getTime(), enterprise.getId().toString()));
             } else {
-                throw new PfeAqsException("An error occurred during creating a enterprise");
+                throw new PfeAqsException(error);
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during creating a enterprise", e);
-            throw new PfeAqsException("An error occurred during creating a enterprise");
+            LOGGER.warn(error, e);
+            throw new PfeAqsException(error);
         }
 
         return enterprise;
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Entreprise updateEnterprise(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Update enterprise");
@@ -315,21 +393,25 @@ public class PfeAqsController implements PfeAqsService {
             enterprise = enterpriseDao.updateEntreprise(enterprise);
 
             if (enterprise != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.UPDATE_ENTERPRISE, Calendar.getInstance().getTime(), enterprise.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.UPDATE_ENTERPRISE, Calendar.getInstance().getTime(), enterprise.getId().toString()));
             } else {
-                throw new PfeAqsException("An error occurred during updating a enterprise " + enterprise.getId());
+                throw new PfeAqsException("An error occurred during updating a enterprise");
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during updating a enterprise {}", enterprise.getId(), e);
-            throw new PfeAqsException("An error occurred during updating a enterprise " + enterprise.getId());
+            LOGGER.warn("An error occurred during updating enterprise", e);
+            throw new PfeAqsException("An error occurred during updating enterprise");
         }
 
         return enterprise;
     }
 
+    /*
+    
+    */
     @Override
     public List<Entreprise> getEnterprises() throws PfeAqsException {
         LOGGER.info("[Controller] get enterprises");
+        String error = "An error occurred during getting enterprises";
 
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_SYSTEM) {
@@ -344,16 +426,21 @@ public class PfeAqsController implements PfeAqsService {
             if (enterprises != null) {
                 auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_ENTERPRISES, Calendar.getInstance().getTime(), ""));
             } else {
-                throw new PfeAqsException("An error occurred during getting enterprises");
+                throw new PfeAqsException(error);
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during getting enterprises", e);
-            throw new PfeAqsException("An error occurred during getting enterprises");
+            LOGGER.warn(error, e);
+            throw new PfeAqsException(error);
         }
 
         return enterprises;
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return 
+     */
     private Entreprise getEnterpriseFromJson(final JSONObject jsonData) {
         Integer id = null;
         if (jsonData.has("id")) {
@@ -372,9 +459,16 @@ public class PfeAqsController implements PfeAqsService {
         }
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Utilisateur addUser(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Add user");
+        String error = "An error occurred during creating a user";
 
         Role authenticatedUserRole = authenticateUser.getRole();
         if (authenticatedUserRole != Role.ADMIN_ENTREPRISE) {
@@ -389,18 +483,23 @@ public class PfeAqsController implements PfeAqsService {
             if (user != null) {
                 user = userDao.changePassword(user.getId(), SecurityUtil.cryptWithMD5(config.getDefaultPass()));
                 EmailUtil.sendEmailCreateAccount(user.getCourriel(), config, user.getNomUtilisateur(), config.getDefaultPass());
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_FORMULAIRE, Calendar.getInstance().getTime(), user.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_FORMULAIRE, Calendar.getInstance().getTime(), user.getId().toString()));
             } else {
-                throw new PfeAqsException("An error occurred during creating a user");
+                throw new PfeAqsException(error);
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during creating a user", e);
-            throw new PfeAqsException("An error occurred during creating a user");
+            LOGGER.warn(error, e);
+            throw new PfeAqsException(error);
         }
 
         return user;
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return 
+     */
     private Utilisateur getUserFromJson(final JSONObject jsonData) {
         Integer id = null;
         if (jsonData.has("id")) {
@@ -415,13 +514,21 @@ public class PfeAqsController implements PfeAqsService {
         int actif = jsonData.getInt("actif");
         long entreprise = jsonData.getLong("entreprise");
 
-        if (id == null) {
-            return new Utilisateur(nomUtilisateur, nom, prenom, courriel, role, actif, entreprise);
+        Utilisateur user = new Utilisateur(nomUtilisateur, nom, prenom, courriel, role, actif, entreprise);
+
+        if (id != null) {
+            return new Utilisateur(id, user);
         } else {
-            return new Utilisateur(id, nomUtilisateur, nom, prenom, courriel, role, actif, entreprise);
+            return user;
         }
     }
 
+    /**
+     * 
+     * @param jsonData
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Utilisateur updateUser(final JSONObject jsonData) throws PfeAqsException {
         LOGGER.info("[Controller] Update user");
@@ -438,18 +545,25 @@ public class PfeAqsController implements PfeAqsService {
             user = userDao.updateUsers(user);
 
             if (user != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.UPDATE_USER, Calendar.getInstance().getTime(), user.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.UPDATE_USER, Calendar.getInstance().getTime(), user.getId().toString()));
             } else {
-                throw new PfeAqsException("An error occurred during updating a user " + user.getId());
+                throw new PfeAqsException("An error occurred during updating a user");
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during updating a user {}", user.getId(), e);
-            throw new PfeAqsException("An error occurred during updating a user " + user.getId());
+            LOGGER.warn("An error occurred during updating user", e);
+            throw new PfeAqsException("An error occurred during updating user");
         }
 
         return user;
     }
 
+    /**
+     * 
+     * @param id
+     * @param activate
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public Utilisateur activateUtilisateur(final Long id, final boolean activate) throws PfeAqsException {
         Role authenticatedUserRole = authenticateUser.getRole();
@@ -459,7 +573,8 @@ public class PfeAqsController implements PfeAqsService {
         }
 
         String logInfo = activate ? "activating" : "deactivating";
-        LOGGER.info("[Controller] " + logInfo + " user");
+        LOGGER.info("[Controller] {} user", logInfo);
+        String error = "An error occurred during ";
         Utilisateur user = null;
 
         try {
@@ -467,18 +582,24 @@ public class PfeAqsController implements PfeAqsService {
 
             if (user != null) {
                 AuditType auditType = activate ? AuditType.ACTIVATION : AuditType.DESACTIVATION;
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), auditType, Calendar.getInstance().getTime(), user.getId() + ""));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), auditType, Calendar.getInstance().getTime(), user.getId().toString()));
             } else {
-                throw new PfeAqsException("An error occurred during " + logInfo + " a user " + user.getId());
+                throw new PfeAqsException(error + logInfo + " a user");
             }
         } catch (Exception e) {
-            LOGGER.warn("An error occurred during " + logInfo + " a user {}", user.getId(), e);
-            throw new PfeAqsException("An error occurred during " + logInfo + " a user " + user.getId());
+            LOGGER.warn(error + logInfo + " user", e);
+            throw new PfeAqsException(error + logInfo + " user");
         }
 
         return user;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
     public List<Utilisateur> getUtilisateurByEnterpriseId(Long id) throws PfeAqsException {
         LOGGER.info("[Controller] get users for the enterprises id {}", id);
@@ -494,7 +615,7 @@ public class PfeAqsController implements PfeAqsService {
             users = userDao.getUsersByEnterprise(id);
 
             if (users != null) {
-                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_USERS, Calendar.getInstance().getTime(), ""+id));
+                auditDao.creerAudit(new Audit(authenticateUser.getId(), AuditType.GET_USERS, Calendar.getInstance().getTime(), "" + id));
             } else {
                 throw new PfeAqsException("An error occurred during getting users for the enterprise id " + id);
             }

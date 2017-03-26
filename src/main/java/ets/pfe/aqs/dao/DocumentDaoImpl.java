@@ -24,8 +24,14 @@ public class DocumentDaoImpl implements DocumentDaoService {
     private static final String GET_FORM_QUERY_WITH_NO_APPROVEFORM = "From Formulaire where nom = :nom";
     private static final String GET_FORM_QUERY_WITH_APPROVEFORM = "From Formulaire where nom = :nom And approbation <= 0";
 
+    /**
+     * 
+     * @param includeNotApproveForm
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException, Exception {
+    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException {
         LOGGER.info("Get all forms");
         EntityManager entityManager = JPAUtility.openEntityManager();
         TypedQuery<Formulaire> query;
@@ -43,8 +49,15 @@ public class DocumentDaoImpl implements DocumentDaoService {
         return formulaire;
     }
 
+    /**
+     * 
+     * @param formName
+     * @param includeNotApproveForm
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire getForm(String formName, boolean includeNotApproveForm) throws PfeAqsException, Exception {
+    public Formulaire getForm(String formName, boolean includeNotApproveForm) throws PfeAqsException {
         LOGGER.info("Get form {}", formName);
         EntityManager entityManager = JPAUtility.openEntityManager();
         TypedQuery<Formulaire> query;
@@ -65,8 +78,14 @@ public class DocumentDaoImpl implements DocumentDaoService {
         return formulaire;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire approveForm(long id) throws PfeAqsException, Exception {
+    public Formulaire approveForm(long id) throws PfeAqsException {
         LOGGER.info("Approving Form with id: {}", id);
         EntityManager entityManager = JPAUtility.openEntityManager();
         Formulaire form = entityManager.find(Formulaire.class, id);
@@ -89,8 +108,14 @@ public class DocumentDaoImpl implements DocumentDaoService {
         return form;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire rejectForm(long id) throws PfeAqsException, Exception {
+    public Formulaire rejectForm(long id) throws PfeAqsException {
         LOGGER.info("Rejecting Form with id: {}", id);
         EntityManager entityManager = JPAUtility.openEntityManager();
         Formulaire form = entityManager.find(Formulaire.class, id);
@@ -113,8 +138,14 @@ public class DocumentDaoImpl implements DocumentDaoService {
         return form;
     }
 
+    /**
+     * 
+     * @param form
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Formulaire createForm(Formulaire form) throws PfeAqsException, Exception {
+    public Formulaire createForm(Formulaire form) throws PfeAqsException {
         LOGGER.info("Creating form with name: {}", form.getNom());
         EntityManager entityManager = JPAUtility.openEntityManager();
         entityManager.getTransaction().begin();

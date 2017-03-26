@@ -1,6 +1,5 @@
 package ets.pfe.aqs;
 
-import ets.pfe.aqs.PfeAqsController;
 import ets.pfe.aqs.dao.EntrepriseDaoImpl;
 import ets.pfe.aqs.dao.service.EntrepriseDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
@@ -79,7 +78,8 @@ public class PfeAqsControllerTest {
     }
 
     private static void setAuthenticateUser(Role role) {
-        authenticateUser = new Utilisateur(1, "username", "lastname", "firstname", "user@mail.com", role, 0, entreprise.getId());
+        authenticateUser = new Utilisateur("username", "lastname", "firstname", "user@mail.com", role, 0, entreprise.getId());
+        authenticateUser = new Utilisateur(1, authenticateUser);
         controller.setAuthenticateUser(authenticateUser);
     }
 
@@ -504,7 +504,7 @@ public class PfeAqsControllerTest {
             Assert.assertEquals("form A", form.getNom());
             Assert.assertEquals(1, form.getVersion());
             Assert.assertNotNull(form.getContenu());
-            Assert.assertEquals(authenticateUser.getId(), form.getIdCreateur());
+            Assert.assertEquals(authenticateUser.getId().intValue(), form.getIdCreateur());
             Assert.assertEquals(1, form.getIdTemplate());
             Assert.assertEquals(1, form.getApprobation());
         } catch (PfeAqsException ex) {
@@ -590,7 +590,7 @@ public class PfeAqsControllerTest {
             Assert.assertEquals("form A", form.getNom());
             Assert.assertEquals(1, form.getVersion());
             Assert.assertNotNull(form.getContenu());
-            Assert.assertEquals(authenticateUser.getId(), form.getIdCreateur());
+            Assert.assertEquals(authenticateUser.getId().intValue(), form.getIdCreateur());
             Assert.assertEquals(1, form.getIdTemplate());
             Assert.assertEquals(1, form.getApprobation());
         } catch (PfeAqsException ex) {
@@ -689,7 +689,7 @@ public class PfeAqsControllerTest {
                     + "\"idTemplate\":\"1\"}");
 
             Formulaire form = controller.createForm(jsonData);
-            form = controller.approveForm(-1);
+            form = controller.approveForm(-1l);
             Assert.assertNull(form);
         } catch (PfeAqsException ex) {
         } finally {
@@ -771,7 +771,7 @@ public class PfeAqsControllerTest {
                     + "\"idTemplate\":\"1\"}");
 
             Formulaire form = controller.createForm(jsonData);
-            form = controller.approveForm(-1);
+            form = controller.approveForm(-1l);
             Assert.assertNull(form);
         } catch (PfeAqsException ex) {
         } finally {
@@ -839,7 +839,7 @@ public class PfeAqsControllerTest {
             Assert.assertEquals("form A", form.getNom());
             Assert.assertEquals(1, form.getVersion());
             Assert.assertNotNull(form.getContenu());
-            Assert.assertEquals(authenticateUser.getId(), form.getIdCreateur());
+            Assert.assertEquals(authenticateUser.getId().intValue(), form.getIdCreateur());
             Assert.assertEquals(1, form.getIdTemplate());
             Assert.assertEquals(1, form.getApprobation());
         } catch (PfeAqsException ex) {
@@ -864,7 +864,7 @@ public class PfeAqsControllerTest {
             Assert.assertEquals("form A", form.getNom());
             Assert.assertEquals(1, form.getVersion());
             Assert.assertNotNull(form.getContenu());
-            Assert.assertEquals(authenticateUser.getId(), form.getIdCreateur());
+            Assert.assertEquals(authenticateUser.getId().intValue(), form.getIdCreateur());
             Assert.assertEquals(1, form.getIdTemplate());
             Assert.assertEquals(1, form.getApprobation());
         } catch (PfeAqsException ex) {

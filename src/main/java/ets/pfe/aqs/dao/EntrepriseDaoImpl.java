@@ -19,9 +19,15 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseDaoImpl.class);
     private static final String GET_ALL_ENTERPRISES_QUERY = "From Entreprise";
 
+    /**
+     * 
+     * @param entreprise
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException, Exception {
-        LOGGER.info("Creating enterprise with name: " + entreprise.getNom());
+    public Entreprise ajouterEntreprise(Entreprise entreprise) throws PfeAqsException {
+        LOGGER.info("Creating enterprise with name: {}", entreprise.getNom());
         EntityManager entityManager = null;
         try {
             entityManager = JPAUtility.openEntityManager();
@@ -35,7 +41,7 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
 
         } catch (Exception e) {
             LOGGER.error("An error occurred while creating the enterprise {}", entreprise.getNom(), e);
-            throw e;
+            throw new PfeAqsException("An error occurred while creating the enterprise " + entreprise.getNom());
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
@@ -43,9 +49,15 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
         return entreprise;
     }
 
+    /**
+     * 
+     * @param newEnterprise
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException, Exception {
-        LOGGER.info("update enterprise with id: " + newEnterprise.getNom());
+    public Entreprise updateEntreprise(Entreprise newEnterprise) throws PfeAqsException {
+        LOGGER.info("update enterprise with id: {}", newEnterprise.getNom());
         EntityManager entityManager = null;
         Entreprise oldEnterprise = null;
 
@@ -66,7 +78,7 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
             LOGGER.info("Enterprise: " + oldEnterprise.getNom() + " updated");
         } catch (Exception e) {
             LOGGER.error("An error occurred while updating the enterprise {}", newEnterprise.getNom(), e);
-            throw e;
+            throw new PfeAqsException("An error occurred while updating the enterprise " + newEnterprise.getNom());
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
@@ -74,11 +86,17 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
         return oldEnterprise;
     }
 
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public Integer getApprobationLevel(Long id) throws PfeAqsException, Exception {
-        LOGGER.info("Get approbation level for enterprise with id: " + id);
+    public Integer getApprobationLevel(Long id) throws PfeAqsException {
+        LOGGER.info("Get approbation level for enterprise with id: {}", id);
         EntityManager entityManager = null;
-        Entreprise enterprise = null;
+        Entreprise enterprise;
 
         try {
             entityManager = JPAUtility.openEntityManager();
@@ -89,19 +107,24 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
                 LOGGER.info("Approbation level for enterprise with id: {}, is ", id, enterprise.getApprobationType().getTotalApprobation());
                 return enterprise.getApprobationType().getTotalApprobation();
             } else {
-                throw new PfeAqsException("The entreprise " + enterprise.getNom() + " dosen't exists in database.");
+                throw new PfeAqsException(String.format("The entreprise %s dosen't exists in database.", id));
             }
 
         } catch (Exception e) {
             LOGGER.error("An error occurred while getting approbation level for the enterprise {}", id, e);
-            throw e;
+            throw new PfeAqsException("An error occurred while getting approbation level for the enterprise " + id);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }
     }
 
+    /**
+     * 
+     * @return
+     * @throws PfeAqsException 
+     */
     @Override
-    public List<Entreprise> getEnterprises() throws PfeAqsException, Exception {
+    public List<Entreprise> getEnterprises() throws PfeAqsException {
         LOGGER.info("Get all enterprises");
         EntityManager entityManager = null;
         List<Entreprise> enterprises = null;
@@ -112,10 +135,10 @@ public class EntrepriseDaoImpl implements EntrepriseDaoService {
             enterprises = query.getResultList();
 
             JPAUtility.closeEntityManager(entityManager);
-            LOGGER.info("{} enterprises are found " + enterprises.size());
+            LOGGER.info("{} enterprises are found ", enterprises.size());
         } catch (Exception e) {
             LOGGER.error("An error occurred while getting enterprises", e);
-            throw e;
+            throw new PfeAqsException("An error occurred while getting enterprises");
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }

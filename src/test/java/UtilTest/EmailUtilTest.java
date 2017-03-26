@@ -30,4 +30,29 @@ public class EmailUtilTest {
             fail();
         }
     }
+
+    @Test
+    public void testEmailError() {
+        ApplicationContext sprinContext = new ClassPathXmlApplicationContext("META-INF/spring/spring-context.xml");
+        ConfigUtil config = (ConfigUtil) sprinContext.getBean("configUtil");
+
+        try {
+            EmailUtil.sendEmailCreateAccount(null, config, "username", "123pass");
+        } catch (MessagingException ex) {
+        } catch (Exception ex) {
+        }
+    }
+
+    @Test
+    public void testEmailError2() {
+        ApplicationContext sprinContext = new ClassPathXmlApplicationContext("META-INF/spring/spring-context.xml");
+        ConfigUtil config = (ConfigUtil) sprinContext.getBean("configUtil");
+
+        try {
+            config.setPfeAqsEmailPassword(null);
+            EmailUtil.sendEmailCreateAccount(null, config, "username", "123pass");
+        } catch (MessagingException ex) {
+        } catch (Exception ex) {
+        }
+    }
 }

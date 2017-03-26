@@ -8,5 +8,11 @@ import ets.pfe.aqs.modele.Audit;
  * @author Zeldorine
  */
 public interface AuditDaoService {
+    /**
+     * 
+     * @param audit
+     * @return
+     * @throws PfeAqsException 
+     */
     public Audit creerAudit(Audit audit) throws PfeAqsException;
 }

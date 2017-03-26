@@ -21,9 +21,17 @@ public abstract class PfeAqsApplication {
     private static ConfigUtil config;
     private static Server jettyServer;
 
+    /**
+     * 
+     */
     private PfeAqsApplication() {
     }
 
+    /**
+     * 
+     * @param args
+     * @throws Exception 
+     */
     public static void main(String[] args) throws Exception {
         ApplicationContext sprinContext = new ClassPathXmlApplicationContext("META-INF/spring/spring-context.xml");
 
@@ -55,6 +63,9 @@ public abstract class PfeAqsApplication {
         }
     }
 
+    /**
+     * 
+     */
     public static void stop() {
         try {
             jettyServer.stop();
@@ -69,6 +80,10 @@ public abstract class PfeAqsApplication {
         }
     }
     
+    /**
+     * 
+     * @return 
+     */
     public static ConfigUtil getConfig() {
         return config;
     }

@@ -1,6 +1,5 @@
 package ets.pfe.aqs.dao;
 
-import ets.pfe.aqs.PfeAqsController;
 import ets.pfe.aqs.dao.service.AuditDaoService;
 import ets.pfe.aqs.exception.PfeAqsException;
 import ets.pfe.aqs.modele.Audit;
@@ -17,6 +16,12 @@ public class AuditDaoImpl implements AuditDaoService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditDaoImpl.class);
 
+    /**
+     * 
+     * @param audit
+     * @return
+     * @throws PfeAqsException 
+     */
     public Audit creerAudit(Audit audit) throws PfeAqsException {
         EntityManager entityManager = null;
         try {

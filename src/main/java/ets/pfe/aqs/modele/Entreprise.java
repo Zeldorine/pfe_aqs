@@ -41,6 +41,13 @@ public class Entreprise implements Serializable {
         //Empty because of jpa
     }
 
+    /**
+     * 
+     * @param nom
+     * @param mission
+     * @param dateCreation
+     * @param approbationType 
+     */
     public Entreprise(String nom, String mission, Date dateCreation, ApprobationType approbationType) {
         this.nom = nom;
         this.mission = mission;
@@ -48,6 +55,14 @@ public class Entreprise implements Serializable {
         this.approbationType = approbationType;
     }
 
+    /**
+     * 
+     * @param id
+     * @param nom
+     * @param mission
+     * @param dateCreation
+     * @param approbationType 
+     */
     public Entreprise(int id, String nom, String mission, Date dateCreation, ApprobationType approbationType) {
         this.id = id;
         this.nom = nom;
@@ -56,38 +71,74 @@ public class Entreprise implements Serializable {
         this.approbationType = approbationType;
     }
 
-    public long getId() {
+    /**
+     * 
+     * @return 
+     */
+    public Long getId() {
         return id;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * 
+     * @param nom 
+     */
     public void setNom(String nom) {
         this.nom = nom;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getMission() {
         return mission;
     }
 
+    /**
+     * 
+     * @param mission 
+     */
     public void setMission(String mission) {
         this.mission = mission;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Date getDateCreation() {
         return dateCreation;
     }
 
+    /**
+     * 
+     * @param dateCreation 
+     */
     public void setDateCreation(Date dateCreation) {
         this.dateCreation = dateCreation;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public ApprobationType getApprobationType() {
         return approbationType;
     }
 
+    /**
+     * 
+     * @param approbationType 
+     */
     public void setApprobationType(ApprobationType approbationType) {
         this.approbationType = approbationType;
     }

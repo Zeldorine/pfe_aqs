@@ -10,13 +10,45 @@ import java.util.List;
  */
 public interface UtilisateurDaoService {
 
-    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException, Exception;
+    /**
+     * 
+     * @param utilisateur
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Utilisateur creerUtilisateur(Utilisateur utilisateur) throws PfeAqsException;
 
-    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException, Exception;
+    /**
+     * 
+     * @param id
+     * @param activate
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Utilisateur activateUtilisateur(Long id, boolean activate) throws PfeAqsException;
 
-    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException, Exception;
+    /**
+     * 
+     * @param newUser
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Utilisateur updateUsers(Utilisateur newUser) throws PfeAqsException;
     
-    public Utilisateur changePassword(Long id, String newPassword) throws PfeAqsException, Exception;
+    /**
+     * 
+     * @param id
+     * @param newPassword
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Utilisateur changePassword(Long id, String newPassword) throws PfeAqsException;
     
-    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException, Exception;
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
+    public List<Utilisateur> getUsersByEnterprise(Long id) throws PfeAqsException;
 }

@@ -9,9 +9,45 @@ import java.util.List;
  * @author Zeldorine
  */
 public interface DocumentDaoService {
-    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException, Exception;
-    public Formulaire getForm(String formName,  boolean includeNotApproveForm) throws PfeAqsException, Exception;
-    public Formulaire approveForm(long id) throws PfeAqsException, Exception;
-    public Formulaire rejectForm(long id) throws PfeAqsException, Exception;
-    public Formulaire createForm(Formulaire form) throws PfeAqsException, Exception;
+    
+    /**
+     * 
+     * @param includeNotApproveForm
+     * @return
+     * @throws PfeAqsException 
+     */
+    public List<Formulaire> getAllForm(boolean includeNotApproveForm) throws PfeAqsException;
+    
+    /**
+     * 
+     * @param formName
+     * @param includeNotApproveForm
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Formulaire getForm(String formName,  boolean includeNotApproveForm) throws PfeAqsException;
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Formulaire approveForm(long id) throws PfeAqsException;
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Formulaire rejectForm(long id) throws PfeAqsException;
+    
+    /**
+     * 
+     * @param form
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Formulaire createForm(Formulaire form) throws PfeAqsException;
 }

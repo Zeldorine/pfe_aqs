@@ -48,6 +48,16 @@ public class Formulaire {
         //Empty because of jpa
     }
 
+    /**
+     * 
+     * @param nom
+     * @param version
+     * @param contenu
+     * @param dateCreation
+     * @param idTemplate
+     * @param idCreateur
+     * @param approbation 
+     */
     public Formulaire(String nom, int version, String contenu, Date dateCreation, int idTemplate, int idCreateur, int approbation) {
         this.nom = nom;
         this.version = version;
@@ -58,73 +68,146 @@ public class Formulaire {
         this.approbation = approbation;
     }
 
-    public Formulaire(int id, String nom, int version, String contenu, Date dateCreation, int idTemplate, int idCreateur, int approbation) {
+    /**
+     * 
+     * @param id
+     * @param form 
+     */
+    public Formulaire(int id, Formulaire form) {
         this.id = id;
-        this.nom = nom;
-        this.version = version;
-        this.contenu = contenu;
-        this.dateCreation = dateCreation;
-        this.idTemplate = idTemplate;
-        this.idCreateur = idCreateur;
-        this.approbation = approbation;
+        this.nom = form.getNom();
+        this.version = form.getVersion();
+        this.contenu = form.getContenu();
+        this.dateCreation = form.dateCreation;
+        this.idTemplate = form.getIdTemplate();
+        this.idCreateur = form.getIdCreateur();
+        this.approbation = form.getApprobation();
     }
-
-    public long getId() {
+   
+    /**
+     * 
+     * @return 
+     */
+    public Long getId() {
         return id;
     }
+    
+    /**
+     * 
+     * @param id 
+     */
+    public void setId(long id) {
+       this.id = id;
+    }
 
+    /**
+     * 
+     * @return 
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * 
+     * @param nom 
+     */
     public void setNom(String nom) {
         this.nom = nom;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int getVersion() {
         return version;
     }
 
+    /**
+     * 
+     * @param version 
+     */
     public void setVersion(int version) {
         this.version = version;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getContenu() {
         return contenu;
     }
 
+    /**
+     * 
+     * @param contenu 
+     */
     public void setContenu(String contenu) {
         this.contenu = contenu;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Date getDateCreation() {
         return dateCreation;
     }
 
+    /**
+     * 
+     * @param dateCreation 
+     */
     public void setDateCreation(Date dateCreation) {
         this.dateCreation = dateCreation;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int getIdTemplate() {
         return idTemplate;
     }
 
+    /**
+     * 
+     * @param idTemplate 
+     */
     public void setIdTemplate(int idTemplate) {
         this.idTemplate = idTemplate;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int getIdCreateur() {
         return idCreateur;
     }
 
+    /**
+     * 
+     * @param idCreateur 
+     */
     public void setIdCreateur(int idCreateur) {
         this.idCreateur = idCreateur;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int getApprobation() {
         return approbation;
     }
 
+    /**
+     * 
+     * @param approbation 
+     */
     public void setApprobation(int approbation) {
         this.approbation = approbation;
     }

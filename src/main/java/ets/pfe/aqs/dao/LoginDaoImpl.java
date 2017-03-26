@@ -18,9 +18,16 @@ import org.apache.commons.lang.StringUtils;
 public class LoginDaoImpl implements LoginDaoService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginDaoImpl.class);
-    private static final String CONNEXION_QUERY = "SELECT id FROM Utilisateur WHERE nom_utilisateur = '{username}' AND mot_de_passe = '{pass}'";
+    private static final String CONNEXION_QUERY = "SELECT id FROM test.Utilisateur WHERE nom_utilisateur = '{username}' AND mot_de_passe = '{pass}'";
 
-    public Utilisateur connexion(String username, String password) throws PfeAqsException, Exception {
+    /**
+     * 
+     * @param username
+     * @param password
+     * @return
+     * @throws PfeAqsException 
+     */
+    public Utilisateur connexion(String username, String password) throws PfeAqsException {
         LOGGER.info("Ask for login for username : {}", username);
         EntityManager entityManager = null;
         Utilisateur utilisateur = null;
@@ -42,7 +49,7 @@ public class LoginDaoImpl implements LoginDaoService {
 
         } catch (Exception e) {
             LOGGER.error("An error occurred while logging the user {}", username, e);
-            throw e;
+            throw new PfeAqsException("An error occurred while logging the user " + username);
         } finally {
             JPAUtility.closeEntityManager(entityManager);
         }

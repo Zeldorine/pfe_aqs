@@ -31,6 +31,14 @@ public abstract class EmailUtil {
     private EmailUtil() {
     }
 
+    /**
+     * 
+     * @param to
+     * @param config
+     * @param identifiant
+     * @param motDePasse
+     * @throws MessagingException 
+     */
     public static void sendEmailCreateAccount(String to, final ConfigUtil config, String identifiant, String motDePasse) throws MessagingException {
         try {
             String content = StringUtils.replace(contentCreateUser, "[IDENTIFIANT]", identifiant);
@@ -42,6 +50,13 @@ public abstract class EmailUtil {
         }
     }
 
+    /**
+     * 
+     * @param to
+     * @param config
+     * @param content
+     * @throws MessagingException 
+     */
     public static void sendEmail(String to, final ConfigUtil config, final String content) throws MessagingException {
 
         try {

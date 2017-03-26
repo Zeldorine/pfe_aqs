@@ -85,7 +85,6 @@ public class LoginDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
-            return;
         } catch (Exception ex) {
             fail();
         }
@@ -114,7 +113,6 @@ public class LoginDaoTest {
             entityManager.getTransaction().begin();
             entityManager.remove(utilisateurToCheck);
             entityManager.getTransaction().commit();
-            return;
         } catch (Exception ex) {
             Logger.getLogger(LoginDaoTest.class.getName()).log(Level.SEVERE, null, ex);
         }
